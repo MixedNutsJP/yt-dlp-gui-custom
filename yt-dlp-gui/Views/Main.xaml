@@ -729,6 +729,8 @@
                     <RowDefinition/>
                     <!-- 6 -->
                     <RowDefinition/>
+                    <!-- 7 -->
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
                 <!--Notifications-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ -->
                 <TextBlock Grid.Row="0" Text="{Binding Source={x:Static app:App.Lang}, Path=Main.Notifications}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
@@ -793,6 +795,13 @@
                         </StackPanel>
                     </ToggleButton>
                 </Grid>
+                <!--Language-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ -->
+                <TextBlock Grid.Row="7" Margin="0,5,0,5" Text="{Binding Source={x:Static app:App.Lang}, Path=Main.Language}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <ComboBox Grid.Row="7" Grid.Column="2" VerticalAlignment="Center"
+                          ItemsSource="{Binding AvailableLanguages}"
+                          SelectedItem="{Binding SelectedLanguage}"
+                          DisplayMemberPath="Name"
+                          SelectionChanged="Language_SelectionChanged"/>
             </Grid>
         </TabItem>
         <!-- Queue Tab -->

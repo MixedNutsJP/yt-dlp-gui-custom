@@ -1,4 +1,5 @@
 ﻿using Libs.Yaml;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using yt_dlp_gui.Models;
@@ -14,9 +15,31 @@ namespace yt_dlp_gui {
             var args = e.Args.ToList();
             LoadPath();
 
-            var langPath = App.Path(App.Folders.root, App.AppName + ".lang");
-            Lang = Yaml.Open<Lang>(langPath);
+            // 設定ファイルから言語設定を読み込み
+            var configPath = Path(Folders.root, AppName + ".yaml");
+            var savedLanguage = string.Empty;
+            if (File.Exists(configPath)) {
+                var config = Yaml.Open<Views.Main.GUIConfig>(configPath);
+                savedLanguage = config.Language;
+            }
+            LoadLanguage(savedLanguage);
             new Views.Main().Show();
+        }
+
+        public static void LoadLanguage(string langCode) {
+            string langPath;
+            if (string.IsNullOrEmpty(langCode)) {
+                // システム言語（デフォルト）を使用
+                langPath = Path(Folders.root, AppName + ".lang");
+            } else {
+                // 指定言語を使用
+                langPath = Path(Folders.languages, langCode, AppName + ".lang");
+                // 言語ファイルが存在しない場合はデフォルトにフォールバック
+                if (!File.Exists(langPath)) {
+                    langPath = Path(Folders.root, AppName + ".lang");
+                }
+            }
+            Lang = Yaml.Open<Lang>(langPath);
         }
     }
 }

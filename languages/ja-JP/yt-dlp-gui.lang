@@ -104,6 +104,10 @@ Main:
   TemporaryLocale: Locale
   TemporarySystem: システム
   TemporaryBrowse: 参照
+  # Options Tab - Language
+  Language: 言語
+  LanguageSystem: システム既定
+  LanguageRestartRequired: 変更を適用するには再起動が必要です。
 # Window - About
 About:
   About: このソフトについて

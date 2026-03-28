@@ -105,6 +105,10 @@ Main:
   TemporaryLocale: Locale
   TemporarySystem: System
   TemporaryBrowse: Browse...
+  # Options Tab - Language
+  Language: Language
+  LanguageSystem: System Default
+  LanguageRestartRequired: Restart required to apply language change.
 # Window - About
 About:
   About: About

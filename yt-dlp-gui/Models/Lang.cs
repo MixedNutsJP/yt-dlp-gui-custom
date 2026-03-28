@@ -91,6 +91,7 @@ namespace yt_dlp_gui.Models {
         [YamlMember(Order = 1001)] public string Main { get; set; } = "Main";
         [YamlMember(Order = 1002)] public string Advance { get; set; } = "Advance";
         [YamlMember(Order = 1003)] public string Options { get; set; } = "Options";
+        [YamlMember(Order = 1004)] public string Queue { get; set; } = "Queue";
 
         [Description("Main Tab")]
         [YamlMember(Order = 1011)] public string Url { get; set; } = "Url";
@@ -106,6 +107,7 @@ namespace yt_dlp_gui.Models {
         [YamlMember(Order = 1024)] public string Record { get; set; } = "Record";
         [YamlMember(Order = 1025)] public string Cancel { get; set; } = "Cancel";
         [YamlMember(Order = 1026)] public string Stop { get; set; } = "Stop";
+        [YamlMember(Order = 1027)] public string AddToQueue { get; set; } = "Add to Queue";
 
         [Description("Main Tab - Thumbnail")]
         [YamlMember(Order = 1031)] public string SaveAs { get; set; } = "Save As...";
@@ -154,6 +156,9 @@ namespace yt_dlp_gui.Models {
         [YamlMember(Order = 1104)] public string CookieAlways { get; set; } = "Always";
         [YamlMember(Order = 1105)] public string CookieAsk { get; set; } = "Ask";
         [YamlMember(Order = 1106)] public string CookieUse { get; set; } = "Use";
+
+        [Description("Advance Tab - Impersonate")]
+        [YamlMember(Order = 1107)] public string Impersonate { get; set; } = "Impersonate";
 
         [Description("Advance Tab - Aria2")]
         [YamlMember(Order = 1111)] public string Aria2 { get; set; } = "Aria2";
@@ -208,6 +213,27 @@ namespace yt_dlp_gui.Models {
         [YamlMember(Order = 1203)] public string TemporaryLocale { get; set; } = "Locale";
         [YamlMember(Order = 1204)] public string TemporarySystem { get; set; } = "System";
         [YamlMember(Order = 1205)] public string TemporaryBrowse { get; set; } = "Browse...";
+
+        [Description("Options Tab - Language")]
+        [YamlMember(Order = 1211)] public string Language { get; set; } = "Language";
+        [YamlMember(Order = 1212)] public string LanguageSystem { get; set; } = "System Default";
+        [YamlMember(Order = 1213)] public string LanguageRestartRequired { get; set; } = "Restart required to apply language change.";
+
+        [Description("Queue Tab")]
+        [YamlMember(Order = 1300)] public string QueueStartAll { get; set; } = "Start Download";
+        [YamlMember(Order = 1301)] public string QueueClearCompleted { get; set; } = "Clear Completed";
+        [YamlMember(Order = 1302)] public string QueueMaxConcurrent { get; set; } = "Concurrent";
+        [YamlMember(Order = 1303)] public string QueueDownloading { get; set; } = "Downloading";
+        [YamlMember(Order = 1304)] public string QueueWaiting { get; set; } = "Waiting";
+        [YamlMember(Order = 1305)] public string QueueCompleted { get; set; } = "Completed";
+        [YamlMember(Order = 1306)] public string QueueFailed { get; set; } = "Failed";
+        [YamlMember(Order = 1307)] public string QueueCancelled { get; set; } = "Cancelled";
+        [YamlMember(Order = 1308)] public string QueueRetry { get; set; } = "Retry";
+        [YamlMember(Order = 1309)] public string QueueRemove { get; set; } = "Remove";
+        [YamlMember(Order = 1310)] public string QueueMoveUp { get; set; } = "Move Up";
+        [YamlMember(Order = 1311)] public string QueueMoveDown { get; set; } = "Move Down";
+        [YamlMember(Order = 1312)] public string QueueOpenFolder { get; set; } = "Open Folder";
+        [YamlMember(Order = 1313)] public string QueueEmpty { get; set; } = "Queue is empty";
 
         //public string Formats { get; set; } = "Formats"; //Deprecated
         //public string EmbedSubs { get; set; } = "Embed Subtitles";

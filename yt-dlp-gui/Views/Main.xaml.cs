@@ -205,6 +205,31 @@ namespace yt_dlp_gui.Views {
             Util.PropertyCopy(Data.GUIConfig, Data);
             //Loaded and enabled auto save config
             Data.AutoSaveConfig = true;
+            // 言語リストを初期化
+            InitLanguages();
+        }
+        private bool _isLanguageInitializing = true;
+        private void InitLanguages() {
+            Data.AvailableLanguages = new List<LanguageItem> {
+                new LanguageItem { Code = "", Name = App.Lang.Main.LanguageSystem },
+                new LanguageItem { Code = "en-US", Name = "English" },
+                new LanguageItem { Code = "ja-JP", Name = "日本語" }
+            };
+            Data.SelectedLanguage = Data.AvailableLanguages
+                .FirstOrDefault(x => x.Code == Data.GUIConfig.Language)
+                ?? Data.AvailableLanguages[0];
+            _isLanguageInitializing = false;
+        }
+        private void Language_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (_isLanguageInitializing) return;
+            if (Data.SelectedLanguage != null && Data.GUIConfig.Language != Data.SelectedLanguage.Code) {
+                Data.GUIConfig.Language = Data.SelectedLanguage.Code;
+                System.Windows.MessageBox.Show(
+                    App.Lang.Main.LanguageRestartRequired,
+                    App.Lang.Main.Language,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
         }
         public void InitConfiguration() {
             Data.Configs.Clear();

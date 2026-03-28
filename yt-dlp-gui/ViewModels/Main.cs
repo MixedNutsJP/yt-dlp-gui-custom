@@ -279,6 +279,10 @@ namespace yt_dlp_gui.Views {
             public int ActiveDownloadCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Downloading);
             public int QueuedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Queued);
             public int CompletedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Completed);
+
+            // 言語設定
+            public List<LanguageItem> AvailableLanguages { get; set; } = new();
+            public LanguageItem? SelectedLanguage { get; set; }
             //
             private void CheckEnable() {
                 Enable.Url = true;
@@ -440,6 +444,7 @@ namespace yt_dlp_gui.Views {
             [YamlMember(Order = 1402)] public bool SaveThumbnail { get; set; } = true;
             [YamlMember(Order = 1403)] public bool UseNotifications { get; set; } = true;
             [YamlMember(Order = 1404)] public bool AutoDownloadAnalysed { get; set; } = false;
+            [YamlMember(Order = 1405)] public string Language { get; set; } = string.Empty;
 
             [Description("Download Queue")]
             [YamlMember(Order = 1501)] public int MaxConcurrentDownloads { get; set; } = 2;
@@ -558,6 +563,10 @@ namespace yt_dlp_gui.Views {
                         break;
                 }
             }
+        }
+        public class LanguageItem {
+            public string Code { get; set; } = string.Empty;
+            public string Name { get; set; } = string.Empty;
         }
     }
 }

@@ -12,6 +12,7 @@ Fork of [yt-dlp-gui](https://github.com/kannagi0303/yt-dlp-gui) by かんなぎ 
 ### Additional Features (Custom)
 * **Download Queue** - Add multiple videos to queue and download in parallel
 * **Parallel Downloads** - Configure concurrent download count (1-3)
+* **Bot Detection Bypass** - Impersonate browser (Chrome/Edge/Firefox/Safari) to bypass bot detection
 
 ### Features (Original)
 * Easy-to-use
@@ -41,6 +42,7 @@ For original documentation, please refer to the [original wiki](https://github.c
 ### 追加機能 (カスタム版)
 * **ダウンロードキュー** - 複数の動画をキューに追加して並列ダウンロード
 * **並列ダウンロード** - 同時ダウンロード数を設定可能 (1-3)
+* **Bot検出回避** - ブラウザ偽装 (Chrome/Edge/Firefox/Safari) によるBot検出の回避
 
 ### 機能 (オリジナル版)
 * シンプルで使いやすい
