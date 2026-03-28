@@ -210,15 +210,51 @@ namespace yt_dlp_gui.Views {
         }
         private bool _isLanguageInitializing = true;
         private void InitLanguages() {
-            Data.AvailableLanguages = new List<LanguageItem> {
-                new LanguageItem { Code = "", Name = App.Lang.Main.LanguageSystem },
-                new LanguageItem { Code = "en-US", Name = "English" },
-                new LanguageItem { Code = "ja-JP", Name = "日本語" }
+            var languages = new List<LanguageItem> {
+                new LanguageItem { Code = "", Name = App.Lang.Main.LanguageSystem }
             };
+
+            // languages フォルダから動的に言語を読み込む
+            var langPath = App.Path(App.Folders.languages);
+            if (Directory.Exists(langPath)) {
+                var langDirs = Directory.EnumerateDirectories(langPath)
+                    .Select(d => Path.GetFileName(d))
+                    .OrderBy(x => x);
+
+                foreach (var langCode in langDirs) {
+                    languages.Add(new LanguageItem {
+                        Code = langCode,
+                        Name = GetLanguageDisplayName(langCode)
+                    });
+                }
+            }
+
+            Data.AvailableLanguages = languages;
             Data.SelectedLanguage = Data.AvailableLanguages
                 .FirstOrDefault(x => x.Code == Data.GUIConfig.Language)
                 ?? Data.AvailableLanguages[0];
             _isLanguageInitializing = false;
+        }
+
+        private static string GetLanguageDisplayName(string langCode) {
+            return langCode switch {
+                "ar-MA" => "العربية",
+                "de-DE" => "Deutsch",
+                "el-GR" => "Ελληνικά",
+                "en-US" => "English",
+                "es-ES" => "Español",
+                "fr-FR" => "Français",
+                "it-IT" => "Italiano",
+                "ja-JP" => "日本語",
+                "ko-KR" => "한국어",
+                "pl-PL" => "Polski",
+                "pt-BR" => "Português (Brasil)",
+                "ru-RU" => "Русский",
+                "uk-UA" => "Українська",
+                "zh-CN" => "简体中文",
+                "zh-TW" => "繁體中文",
+                _ => langCode
+            };
         }
         private void Language_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             if (_isLanguageInitializing) return;
