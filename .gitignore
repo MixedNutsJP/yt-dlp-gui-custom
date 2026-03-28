@@ -383,3 +383,6 @@ nul
 
 # Claude Code
 .claude/
+
+# Download queue storage
+download-queue.json
