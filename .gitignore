@@ -363,3 +363,21 @@ MigrationBackup/
 FodyWeavers.xsd
 
 yt-dlp-gui.yaml
+
+# External tools (yt-dlp, ffmpeg)
+yt-dlp.exe
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe
+ffmpeg-*/
+
+# Build output
+yt-dlp-gui.exe
+
+# Runtime generated files
+yt-dlp-gui.lang
+queue_debug.log
+nul
+
+# Claude Code
+.claude/
