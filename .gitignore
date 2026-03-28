@@ -373,6 +373,7 @@ ffmpeg-*/
 
 # Build output
 yt-dlp-gui.exe
+yt-dlp-gui.zip
 
 # Runtime generated files
 yt-dlp-gui.lang
