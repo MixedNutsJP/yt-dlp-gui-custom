@@ -35,6 +35,9 @@ Fork of [yt-dlp-gui](https://github.com/kannagi0303/yt-dlp-gui) by かんなぎ 
 
 For original documentation, please refer to the [original wiki](https://github.com/kannagi0303/yt-dlp-gui/wiki).
 
+### Disclaimer
+This tool is intended for legal purposes only. Mixed Nuts assumes no responsibility for any damages or issues arising from the use of this tool.
+
 ---
 
 ## 日本語
@@ -64,3 +67,6 @@ For original documentation, please refer to the [original wiki](https://github.c
 * オリジナルリポジトリ: [yt-dlp-gui](https://github.com/kannagi0303/yt-dlp-gui)
 
 詳細なドキュメントは[オリジナルのwiki](https://github.com/kannagi0303/yt-dlp-gui/wiki)を参照してください。
+
+### 免責事項
+本ツールは合法的な目的でのみ使用してください。本ツールで生じた損害等に関してMixed Nutsでは一切責任を負いません。
