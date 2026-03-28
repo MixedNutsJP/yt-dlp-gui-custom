@@ -26,8 +26,7 @@ Fork of [yt-dlp-gui](https://github.com/kannagi0303/yt-dlp-gui) by かんなぎ 
 * Localized Language supported
 
 ### Requirements
-* [yt-dlp](https://github.com/yt-dlp/yt-dlp) (or Compatible Applications)
-* [FFMPEG](https://ffmpeg.org/download.html#build-windows)
+* All required components (yt-dlp, FFMPEG) are included in the release package
 
 ### Credits
 * Original Author: [かんなぎ (Kannagi)](https://github.com/kannagi0303)
@@ -59,8 +58,7 @@ This tool is intended for legal purposes only. Mixed Nuts assumes no responsibil
 * 多言語対応
 
 ### 必要なもの
-* [yt-dlp](https://github.com/yt-dlp/yt-dlp) (または互換アプリケーション)
-* [FFMPEG](https://ffmpeg.org/download.html#build-windows)
+* 必要なコンポーネント (yt-dlp, FFMPEG) はリリースパッケージに同梱されています
 
 ### クレジット
 * オリジナル作者: [かんなぎ (Kannagi)](https://github.com/kannagi0303)
