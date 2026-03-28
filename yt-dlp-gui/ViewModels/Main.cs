@@ -54,6 +54,19 @@ namespace yt_dlp_gui.Views {
                             break;
                     }
                 };
+                DownloadQueue.PropertyChanged += (s, e) => {
+                    switch (e.PropertyName) {
+                        case nameof(ConcurrentObservableCollection<DownloadItem>.CollectionView):
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DownloadQueueView)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(QueuedItems)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(DownloadingItems)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CompletedItems)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ActiveDownloadCount)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(QueuedCount)));
+                            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CompletedCount)));
+                            break;
+                    }
+                };
                 PropertyChanged += SelfData_PropertyChanged;
             }
             private Regex _isComment = new Regex(@"^\s*#");
@@ -219,6 +232,7 @@ namespace yt_dlp_gui.Views {
             public string ExecText { get; set; } = string.Empty;
             public UseCookie UseCookie { get; set; } = UseCookie.WhenNeeded;
             public CookieType CookieType { get; set; } = CookieType.Chrome;
+            public ImpersonateType ImpersonateType { get; set; } = ImpersonateType.None;
             public bool UseNotifications { get; set; } = true;
             public bool UseAria2 { get; set; } = true;
             public bool NeedCookie { get; set; } = false;
@@ -251,6 +265,20 @@ namespace yt_dlp_gui.Views {
             public IEnumerable<KeyValuePair<string, string>> DNStatus_InfosView
                 => DNStatus_Infos.CollectionView;
             public string ClipboardText { get; set; } = string.Empty;
+
+            // ダウンロードキュー関連
+            public ConcurrentObservableCollection<DownloadItem> DownloadQueue { get; set; } = new();
+            public IEnumerable<DownloadItem> DownloadQueueView => DownloadQueue.CollectionView;
+            public IEnumerable<DownloadItem> QueuedItems => DownloadQueue.CollectionView
+                .Where(x => x.Status == DownloadItemStatus.Queued);
+            public IEnumerable<DownloadItem> DownloadingItems => DownloadQueue.CollectionView
+                .Where(x => x.Status == DownloadItemStatus.Downloading);
+            public IEnumerable<DownloadItem> CompletedItems => DownloadQueue.CollectionView
+                .Where(x => x.Status == DownloadItemStatus.Completed);
+            public int MaxConcurrentDownloads { get; set; } = 2;
+            public int ActiveDownloadCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Downloading);
+            public int QueuedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Queued);
+            public int CompletedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Completed);
             //
             private void CheckEnable() {
                 Enable.Url = true;
@@ -357,6 +385,7 @@ namespace yt_dlp_gui.Views {
             public bool SelectSubtitle { get; set; } = true;
             public bool UseCookie { get; set; } = true;
             public bool CookieType { get; set; } = true;
+            public bool ImpersonateType { get; set; } = true;
             public bool SaveThumbnail { get; set; } = true;
             public bool SaveVideo { get; set; } = true;
             public bool SaveAudio { get; set; } = true;
@@ -395,6 +424,7 @@ namespace yt_dlp_gui.Views {
             [YamlMember(Order = 1202)] public string ProxyUrl { get; set; } = string.Empty;
             [YamlMember(Order = 1203)] public UseCookie UseCookie { get; set; } = UseCookie.WhenNeeded;
             [YamlMember(Order = 1204)] public CookieType CookieType { get; set; } = CookieType.Chrome;
+            [YamlMember(Order = 1205)] public ImpersonateType ImpersonateType { get; set; } = ImpersonateType.None;
 
             [Description("Advance")]
             [YamlMember(Order = 1301)] public string ConfigurationFile { get; set; } = string.Empty;
@@ -410,7 +440,10 @@ namespace yt_dlp_gui.Views {
             [YamlMember(Order = 1402)] public bool SaveThumbnail { get; set; } = true;
             [YamlMember(Order = 1403)] public bool UseNotifications { get; set; } = true;
             [YamlMember(Order = 1404)] public bool AutoDownloadAnalysed { get; set; } = false;
-            
+
+            [Description("Download Queue")]
+            [YamlMember(Order = 1501)] public int MaxConcurrentDownloads { get; set; } = 2;
+
             [Description("Last Checking Update Date")]
             [YamlMember(Order = 9001)] public string LastVersion { get; set; } = string.Empty;
             [YamlMember(Order = 9002)] public string LastCheckUpdate { get; set; } = string.Empty;

@@ -573,21 +573,32 @@
                             <TextBlock Margin="2,0,0,0" Text="{Binding Source={x:Static app:App.Lang}, Path=Main.Cancel}"/>
                         </StackPanel>
                     </Button>
-                    <Button Grid.Column="1" IsEnabled="{Binding Enable.Download}" Margin="2" Click="Button_Download" Cursor="Hand">
-                        <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                    <!-- Download buttons (hidden during download) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsDownload}" Value="True">
                                         <Setter Property="Visibility" Value="Collapsed"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Button.Style>
-                        <StackPanel Orientation="Horizontal" Margin="4,0">
-                            <controls:Icons Size="14" Kind="Download" IsLoading="{Binding IsDownload}"/>
-                            <TextBlock Margin="2,0,0,0" d:Text="Download" Text="{Binding ExecText}"/>
-                        </StackPanel>
-                    </Button>
+                        </StackPanel.Style>
+                        <!-- Download Now button -->
+                        <Button IsEnabled="{Binding Enable.Download}" Margin="2" Click="Button_Download" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                <controls:Icons Size="14" Kind="Download"/>
+                                <TextBlock Margin="2,0,0,0" d:Text="Download" Text="{Binding ExecText}"/>
+                            </StackPanel>
+                        </Button>
+                        <!-- Add to Queue button -->
+                        <Button IsEnabled="{Binding Enable.Download}" Margin="2" Click="Button_AddToQueue" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal" Margin="4,0">
+                                <controls:Icons Size="14" Kind="Package"/>
+                                <TextBlock Margin="2,0,0,0" Text="{Binding Source={x:Static app:App.Lang}, Path=Main.AddToQueue}"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
 
                 </Grid>
                 <!-- -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ -->
@@ -646,6 +657,14 @@
                         <Separator/>
                         <ComboBoxItem Content="Chromium" Tag="{x:Static m:CookieType.Chromium}"/>
                         <ComboBoxItem Content="Chrome Beta" Tag="{x:Static m:CookieType.Chrome_Beta}"/>
+                    </ComboBox>
+                    <TextBlock Text="{Binding Source={x:Static app:App.Lang}, Path=Main.Impersonate}" Margin="8,0,4,0" VerticalAlignment="Center"/>
+                    <ComboBox SelectedValue="{Binding ImpersonateType}" SelectedValuePath="Tag" IsEnabled="{Binding Enable.ImpersonateType}">
+                        <ComboBoxItem Content="None" Tag="{x:Static m:ImpersonateType.None}"/>
+                        <ComboBoxItem Content="Chrome" Tag="{x:Static m:ImpersonateType.Chrome}"/>
+                        <ComboBoxItem Content="Edge" Tag="{x:Static m:ImpersonateType.Edge}"/>
+                        <ComboBoxItem Content="Firefox" Tag="{x:Static m:ImpersonateType.Firefox}"/>
+                        <ComboBoxItem Content="Safari" Tag="{x:Static m:ImpersonateType.Safari}"/>
                     </ComboBox>
                 </StackPanel>
                 <!--UseAria2-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_ -->
@@ -774,6 +793,245 @@
                         </StackPanel>
                     </ToggleButton>
                 </Grid>
+            </Grid>
+        </TabItem>
+        <!-- Queue Tab -->
+        <TabItem Header="{Binding Source={x:Static app:App.Lang}, Path=Main.Queue}">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Toolbar -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,4">
+                    <Button Click="Button_QueueStartAll" Margin="0,0,8,0" Padding="8,2" Cursor="Hand">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:Icons Size="14" Kind="Download"/>
+                            <TextBlock Text="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueStartAll}" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Text="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueMaxConcurrent}" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                    <ComboBox SelectedValue="{Binding MaxConcurrentDownloads}" SelectedValuePath="Tag" Width="50">
+                        <ComboBoxItem Content="1" Tag="1"/>
+                        <ComboBoxItem Content="2" Tag="2"/>
+                        <ComboBoxItem Content="3" Tag="3"/>
+                    </ComboBox>
+                    <Button Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueClearCompleted}"
+                            Click="Button_QueueClearCompleted" Margin="8,0,0,0" Padding="8,2"/>
+                </StackPanel>
+
+                <!-- Queue List -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding DownloadQueueView}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border BorderBrush="{StaticResource ControlDefaultBorderBrush}"
+                                        BorderThickness="1" Margin="0,2" Padding="4">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Thumbnail -->
+                                        <Border Width="80" Height="45" BorderBrush="{StaticResource ControlDefaultBorderBrush}" BorderThickness="1">
+                                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill"/>
+                                        </Border>
+
+                                        <!-- Info -->
+                                        <StackPanel Grid.Column="1" Margin="8,0,4,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" FontWeight="SemiBold"/>
+
+                                            <!-- Progress bar (only show when downloading) -->
+                                            <ProgressBar Value="{Binding Progress}" Height="4" Margin="0,4,0,2" Maximum="100">
+                                                <ProgressBar.Style>
+                                                    <Style TargetType="ProgressBar">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Downloading">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </ProgressBar.Style>
+                                            </ProgressBar>
+
+                                            <!-- Status info -->
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock FontSize="10" Margin="0,0,8,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Setter Property="Text" Value="{Binding StatusText}"/>
+                                                            <Setter Property="Foreground" Value="Gray"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Downloading">
+                                                                    <Setter Property="Foreground" Value="#FF50A4FA"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                                    <Setter Property="Foreground" Value="#FF00CC00"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                                    <Setter Property="Foreground" Value="#FFFF4444"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <!-- Speed and ETA (only show when downloading) -->
+                                                <TextBlock FontSize="10" Foreground="Gray">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Status}" Value="Downloading">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                    <Run Text="{Binding Progress, StringFormat={}{0:N1}%}"/>
+                                                    <Run Text=" | "/>
+                                                    <Run Text="{Binding Speed, StringFormat={}{0:N2} MB/s}"/>
+                                                    <Run Text=" | "/>
+                                                    <Run Text="{Binding ETA}"/>
+                                                </TextBlock>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <!-- Action Buttons -->
+                                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                            <!-- Cancel button (downloading) -->
+                                            <Button Click="Button_QueueCancel" Tag="{Binding Id}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.Cancel}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Downloading">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="WindowClose"/>
+                                            </Button>
+
+                                            <!-- Move Up button (queued) -->
+                                            <Button Click="Button_QueueMoveUp" Tag="{Binding Id}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueMoveUp}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Queued">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="MenuRight" RenderTransformOrigin="0.5,0.5">
+                                                    <controls:Icons.RenderTransform>
+                                                        <RotateTransform Angle="-90"/>
+                                                    </controls:Icons.RenderTransform>
+                                                </controls:Icons>
+                                            </Button>
+
+                                            <!-- Move Down button (queued) -->
+                                            <Button Click="Button_QueueMoveDown" Tag="{Binding Id}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueMoveDown}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Queued">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="MenuDown"/>
+                                            </Button>
+
+                                            <!-- Retry button (failed/cancelled) -->
+                                            <Button Click="Button_QueueRetry" Tag="{Binding Id}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueRetry}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Cancelled">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="Loading"/>
+                                            </Button>
+
+                                            <!-- Open folder button (completed) -->
+                                            <Button Click="Button_QueueOpenFolder" Tag="{Binding ActualPath}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueOpenFolder}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="FolderMoveOutline"/>
+                                            </Button>
+
+                                            <!-- Remove button (not downloading) -->
+                                            <Button Click="Button_QueueRemove" Tag="{Binding Id}" Padding="4,2" Margin="2,0"
+                                                    ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueRemove}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Status}" Value="Downloading">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                                <controls:Icons Size="14" Kind="Eraser"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Empty state -->
+                <TextBlock Grid.Row="1" Text="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueEmpty}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="Gray" FontSize="14">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DownloadQueue.Count}" Value="0">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
             </Grid>
         </TabItem>
     </TabControl>

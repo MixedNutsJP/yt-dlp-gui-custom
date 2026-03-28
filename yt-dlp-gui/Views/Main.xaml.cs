@@ -30,6 +30,8 @@ namespace yt_dlp_gui.Views {
     public partial class Main :Window {
         private readonly ViewData Data = new();
         private List<DLP> RunningDLP = new();
+        private DownloadManager _downloadManager;
+
         public Main() {
             InitializeComponent();
             DataContext = Data;
@@ -68,6 +70,9 @@ namespace yt_dlp_gui.Views {
 
             //Monitor Clipboard
             InitClipboard();
+
+            //Initialize Download Manager
+            InitDownloadManager();
 
             //run update check
             Task.Run(Inits);
@@ -185,6 +190,16 @@ namespace yt_dlp_gui.Views {
             }
             return string.Empty;
         }
+        public void InitDownloadManager() {
+            _downloadManager = new DownloadManager(Data, () => GetTempPath);
+
+            // 保存されたキューを復元
+            var savedQueue = QueueStorage.Load();
+            foreach (var item in savedQueue) {
+                Data.DownloadQueue.Add(item);
+            }
+        }
+
         public void InitGUIConfig() {
             Data.GUIConfig.Load(App.Path(App.Folders.root, App.AppName + ".yaml"));
             Util.PropertyCopy(Data.GUIConfig, Data);
@@ -294,6 +309,7 @@ namespace yt_dlp_gui.Views {
             //Analyze
             var dlp = new DLP(Data.Url);
             if (Data.NeedCookie) dlp.Cookie(Data.CookieType);
+            dlp.Impersonate(Data.ImpersonateType);
             dlp.Proxy(Data.ProxyUrl, Data.ProxyEnabled);
             dlp.GetInfo();
             if (!string.IsNullOrWhiteSpace(Data.selectedConfig.file)) {
@@ -301,11 +317,22 @@ namespace yt_dlp_gui.Views {
             }
             if (Data.UseOutput) dlp.Output("%(title)s.%(ext)s"); //if not used config, default template
             ClearStatus();
+
+            // ログ出力用パス
+            var debugLogPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "", "queue_debug.log");
+            try { File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Starting Exec...{Environment.NewLine}"); } catch { }
+
             dlp.Exec(null, std => {
                 //取得JSON
-                Data.Video = JsonConvert.DeserializeObject<Video>(std, new JsonSerializerSettings() {
-                    NullValueHandling = NullValueHandling.Ignore
-                });
+                try {
+                    File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Received JSON length: {std?.Length ?? 0}, preview: {std?.Substring(0, Math.Min(std?.Length ?? 0, 200))}...{Environment.NewLine}");
+                    Data.Video = JsonConvert.DeserializeObject<Video>(std, new JsonSerializerSettings() {
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+                } catch (Exception ex) {
+                    File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] JSON Parse Error: {ex.Message}{Environment.NewLine}");
+                    throw;
+                }
 
                 //Reading Chapters
                 {
@@ -363,7 +390,11 @@ namespace yt_dlp_gui.Views {
                 //Data.TargetName = GetValidFileName(Data.Video.title) + ".tmp"; //预设挡案名称
                 Data.TargetName = full; //预设挡案名称
 
+                File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Completed successfully{Environment.NewLine}");
             });
+
+            try { File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Exec finished{Environment.NewLine}"); } catch { }
+
             dlp.Err(DLP.DLPError.Sign, () => {
                 if (Data.UseCookie == UseCookie.WhenNeeded) {
                     Data.NeedCookie = true;
@@ -479,6 +510,7 @@ namespace yt_dlp_gui.Views {
                         .LoadConfig(Data.selectedConfig.file)
                         .MTime(Data.ModifiedType)
                         .Cookie(Data.CookieType, Data.NeedCookie)
+                        .Impersonate(Data.ImpersonateType)
                         .Proxy(Data.ProxyUrl, Data.ProxyEnabled)
                         .UseAria2(Data.UseAria2)
                         .LimitRate(Data.LimitRate)
@@ -748,6 +780,98 @@ namespace yt_dlp_gui.Views {
         private void Button_PlayNotify(object sender, RoutedEventArgs e) {
             Util.NotifySound(Data.PathNotify);
         }
+
+        // === Queue Event Handlers ===
+
+        private void Button_AddToQueue(object sender, RoutedEventArgs e) {
+            var item = CreateDownloadItem();
+            _downloadManager.Enqueue(item);
+        }
+
+        private DownloadItem CreateDownloadItem() {
+            // デバッグ出力（ファイルに書き出し）
+            var logPath = Path.Combine(App.AppPath, "queue_debug.log");
+            var logMsg = $"[{DateTime.Now:HH:mm:ss}] CreateDownloadItem: " +
+                         $"selectedVideo(id={Data.selectedVideo?.format_id}, video_ext={Data.selectedVideo?.video_ext}, type={Data.selectedVideo?.type}), " +
+                         $"selectedAudio(id={Data.selectedAudio?.format_id}, audio_ext={Data.selectedAudio?.audio_ext}, type={Data.selectedAudio?.type})";
+            try { File.AppendAllText(logPath, logMsg + Environment.NewLine); } catch { }
+
+            return new DownloadItem {
+                Url = Data.Url,
+                Title = Data.Video.title ?? "Unknown",
+                Thumbnail = Data.Thumbnail,
+                VideoFormatId = Data.selectedVideo?.format_id ?? "",
+                AudioFormatId = Data.selectedAudio?.format_id ?? "",
+                VideoExt = Data.selectedVideo?.video_ext ?? "",
+                AudioExt = Data.selectedAudio?.audio_ext ?? "",
+                IsPackage = Data.selectedVideo?.type == FormatType.package,
+                OutputExt = Path.GetExtension(Data.TargetFile).TrimStart('.').ToLower(),
+                // TargetPath は保存しない - ダウンロード時に Data.TargetPath を参照
+                UseAria2 = Data.UseAria2,
+                NeedCookie = Data.NeedCookie,
+                CookieType = Data.CookieType,
+                ImpersonateType = Data.ImpersonateType,
+                ProxyUrl = Data.ProxyUrl,
+                ProxyEnabled = Data.ProxyEnabled,
+                ConfigFile = Data.selectedConfig?.file ?? "",
+                TimeRange = Data.TimeRange,
+                LimitRate = Data.LimitRate,
+                EmbedThumbnail = Data.EmbedThumbnail,
+                EmbedChapters = Data.EmbedChapters,
+                EmbedSubtitles = Data.EmbedSubtitles,
+                SaveThumbnail = Data.SaveThumbnail,
+                SubtitleLang = Data.selectedSub?.key ?? "",
+                ModifiedType = Data.ModifiedType
+            };
+        }
+
+        private void Button_QueueClearCompleted(object sender, RoutedEventArgs e) {
+            _downloadManager.ClearCompleted();
+        }
+
+        private void Button_QueueStartAll(object sender, RoutedEventArgs e) {
+            _downloadManager.StartAll();
+        }
+
+        private void Button_QueueCancel(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is Guid id) {
+                _downloadManager.Cancel(id);
+            }
+        }
+
+        private void Button_QueueMoveUp(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is Guid id) {
+                _downloadManager.MoveUp(id);
+            }
+        }
+
+        private void Button_QueueMoveDown(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is Guid id) {
+                _downloadManager.MoveDown(id);
+            }
+        }
+
+        private void Button_QueueRetry(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is Guid id) {
+                _downloadManager.Retry(id);
+            }
+        }
+
+        private void Button_QueueRemove(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is Guid id) {
+                _downloadManager.Remove(id);
+            }
+        }
+
+        private void Button_QueueOpenFolder(object sender, RoutedEventArgs e) {
+            if (sender is System.Windows.Controls.Button btn && btn.Tag is string path) {
+                if (File.Exists(path)) {
+                    Util.Explorer(path);
+                }
+            }
+        }
+
+        // === End Queue Event Handlers ===
 
         private void TextBoxNumber_Changed(object sender, EventArgs e) {
             if (Data.Scale == 0) {
