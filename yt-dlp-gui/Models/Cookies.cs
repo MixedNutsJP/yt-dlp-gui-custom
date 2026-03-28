@@ -1,17 +1,24 @@
 ﻿namespace yt_dlp_gui.Models {
-    public enum UseCookie { 
-        WhenNeeded, 
-        Never, 
+    public enum UseCookie {
+        WhenNeeded,
+        Never,
         Always,
         Ask
     }
     public enum CookieType {
-        Chrome, 
-        Edge, 
+        Chrome,
+        Edge,
         Firefox,
-        Opera, 
+        Opera,
         Vivaldi,
-        Chromium, 
+        Chromium,
         Chrome_Beta
+    }
+    public enum ImpersonateType {
+        None,
+        Chrome,
+        Edge,
+        Firefox,
+        Safari
     }
 }

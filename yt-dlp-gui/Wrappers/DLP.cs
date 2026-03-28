@@ -64,7 +64,7 @@ namespace yt_dlp_gui.Wrappers {
         }
         public DLP Temp(string path) {
             Options["--cache-dir"] = path.QP();
-            Options["[temp]"] = path.QP("temp");
+            Options["--paths"] = path.QP("temp");
             return this;
         }
         public DLP Proxy(string proxy_url, bool enable = true) {
@@ -187,15 +187,30 @@ namespace yt_dlp_gui.Wrappers {
             }
             return this;
         }
+        public DLP Impersonate(ImpersonateType type, bool enable = true) {
+            if (enable && type != ImpersonateType.None) {
+                switch (type) {
+                    case ImpersonateType.Chrome:
+                        Options["--impersonate"] = "chrome";
+                        break;
+                    case ImpersonateType.Edge:
+                        Options["--impersonate"] = "edge";
+                        break;
+                    case ImpersonateType.Firefox:
+                        Options["--impersonate"] = "firefox";
+                        break;
+                    case ImpersonateType.Safari:
+                        Options["--impersonate"] = "safari";
+                        break;
+                }
+            }
+            return this;
+        }
         private string Args {
             get {
                 var args = Options.Select(x => {
                     var key = x.Key;
                     switch (key) {
-                        case "[temp]":
-                            //key = "--paths";
-                            key = "--output";
-                            break;
                         case "[chapter]":
                         case "[thumbnail]":
                         case "[subtitle]":
@@ -215,7 +230,10 @@ namespace yt_dlp_gui.Wrappers {
         public DLP DownloadFormat(string format_id, string targetpath, string originext) {
             Debug.WriteLine($"id:{format_id} path:{targetpath}", "DownloadFormat");
             Options["--format"] = format_id;
-            if (targetpath.getExt() != originext) {
+            // 複数フォーマット（video+audio）の場合、マージ出力形式を指定
+            if (format_id.Contains("+")) {
+                Options["--merge-output-format"] = targetpath.getExt();
+            } else if (targetpath.getExt() != originext) {
                 Options["--remux-video"] = targetpath.getExt();
             }
             Options["--output"] = Path.ChangeExtension(targetpath, ".%(ext)s").QP();
@@ -276,6 +294,10 @@ namespace yt_dlp_gui.Wrappers {
             };
             //Debug.WriteLine(Args);
             Debug.WriteLine($"{info.FileName} {info.Arguments}");
+            // ログ出力用パス
+            var logPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "", "queue_debug.log");
+            // ファイルにもコマンドラインを出力
+            try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] CMD: {info.FileName} {info.Arguments}{Environment.NewLine}"); } catch { }
             process.StartInfo = info;
             process.EnableRaisingEvents = true;
             process.OutputDataReceived += (s, e) => {
@@ -288,6 +310,8 @@ namespace yt_dlp_gui.Wrappers {
             process.ErrorDataReceived += (s, e) => {
                 Debug.WriteLine(e.Data, "ERR");
                 if (!string.IsNullOrWhiteSpace(e.Data)) {
+                    // stderrもログに出力
+                    try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] STDERR: {e.Data}{Environment.NewLine}"); } catch { }
                     stdall?.Invoke(e.Data);
                     stderr?.Invoke(e.Data);
                     if (ErrSign.IsMatch(e.Data)) {
@@ -301,6 +325,10 @@ namespace yt_dlp_gui.Wrappers {
             process.BeginErrorReadLine();
             process.BeginOutputReadLine();
             process.WaitForExit();
+
+            // 終了コードをログに出力
+            try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ExitCode: {process.ExitCode}{Environment.NewLine}"); } catch { }
+
             return process;
         }
         public DLP Close() {
