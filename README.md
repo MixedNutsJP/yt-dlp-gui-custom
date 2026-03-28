@@ -18,13 +18,13 @@ Add multiple videos to queue and download in parallel.
 1. Analyze a video URL
 2. Click **Add to Queue** button to add to download queue
 
-![Add to Queue](Screenshots/Add-to-Queue.png)
+![Add to Queue](docs/images/Add-to-Queue.png)
 
 3. Go to **Queue** tab to manage downloads
 4. Set **Concurrent** to control parallel download count (1-3)
 5. Click **Start Download** to begin
 
-![Queue Tab](Screenshots/Queue-tab.png)
+![Queue Tab](docs/images/Queue-tab.png)
 
 #### Bot Detection Bypass
 
@@ -33,7 +33,7 @@ Use browser impersonation to bypass bot detection (useful for sites like YouTube
 1. Go to **Advance** tab
 2. Set **Impersonate** to Chrome, Edge, Firefox, or Safari
 
-![Impersonate Option](Screenshots/Impresonate-Option.png)
+![Impersonate Option](docs/images/Impresonate-Option.png)
 
 ### Features (Original)
 * Easy-to-use
@@ -80,13 +80,13 @@ This tool is intended for legal purposes only. Mixed Nuts assumes no responsibil
 1. 動画URLを分析
 2. **Add to Queue** ボタンをクリックしてキューに追加
 
-![Add to Queue](Screenshots/Add-to-Queue.png)
+![Add to Queue](docs/images/Add-to-Queue.png)
 
 3. **Queue** タブでダウンロードを管理
 4. **Concurrent** で同時ダウンロード数を設定 (1-3)
 5. **Start Download** をクリックして開始
 
-![Queue Tab](Screenshots/Queue-tab.png)
+![Queue Tab](docs/images/Queue-tab.png)
 
 #### Bot検出回避
 
@@ -95,7 +95,7 @@ This tool is intended for legal purposes only. Mixed Nuts assumes no responsibil
 1. **Advance** タブを開く
 2. **Impersonate** でChrome、Edge、Firefox、Safariのいずれかを選択
 
-![Impersonate Option](Screenshots/Impresonate-Option.png)
+![Impersonate Option](docs/images/Impresonate-Option.png)
 
 ### 機能 (オリジナル版)
 * シンプルで使いやすい
