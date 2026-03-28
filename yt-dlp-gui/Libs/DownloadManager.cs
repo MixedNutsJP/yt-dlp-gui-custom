@@ -18,7 +18,6 @@ namespace Libs {
     /// </summary>
     public class DownloadManager {
         private readonly ConcurrentDictionary<Guid, (DLP Process, CancellationTokenSource CTS)> _activeDownloads = new();
-        private readonly SemaphoreSlim _semaphore;
         private readonly Main.ViewData _data;
         private readonly Func<string>? _getTempPath;
         private bool _isProcessing = false;
@@ -26,7 +25,6 @@ namespace Libs {
 
         public DownloadManager(Main.ViewData data, Func<string>? getTempPath = null) {
             _data = data;
-            _semaphore = new SemaphoreSlim(data.MaxConcurrentDownloads, 10); // 最大10並列まで許可
             _getTempPath = getTempPath;
         }
 
@@ -62,40 +60,34 @@ namespace Libs {
         /// <summary>
         /// キュー処理ループ
         /// </summary>
-        private async void ProcessQueue() {
+        private void ProcessQueue() {
             lock (_lockObject) {
                 if (_isProcessing) return;
                 _isProcessing = true;
             }
 
             try {
-                while (true) {
-                    // UIスレッドでキュー状態を確認
-                    DownloadItem? next = null;
-                    bool hasQueued = false;
+                // 現在のアクティブダウンロード数と最大並列数を取得
+                int activeCount = _activeDownloads.Count;
+                int maxConcurrent = _data.MaxConcurrentDownloads;
+                int slotsAvailable = maxConcurrent - activeCount;
 
-                    Application.Current.Dispatcher.Invoke(() => {
-                        hasQueued = _data.DownloadQueue.Any(x => x.Status == DownloadItemStatus.Queued);
-                        if (hasQueued) {
-                            next = _data.DownloadQueue.FirstOrDefault(x => x.Status == DownloadItemStatus.Queued);
-                        }
+                if (slotsAvailable <= 0) return;
+
+                // 待機中のアイテムを取得（空きスロット分だけ）
+                var queuedItems = new System.Collections.Generic.List<DownloadItem>();
+                Application.Current.Dispatcher.Invoke(() => {
+                    queuedItems = _data.DownloadQueue
+                        .Where(x => x.Status == DownloadItemStatus.Queued)
+                        .Take(slotsAvailable)
+                        .ToList();
+                });
+
+                // 各アイテムに対してダウンロードタスクを開始
+                foreach (var item in queuedItems) {
+                    _ = Task.Run(async () => {
+                        await ExecuteDownloadAsync(item);
                     });
-
-                    if (!hasQueued || next == null) break;
-
-                    await _semaphore.WaitAsync();
-
-                    // セマフォ取得後に再確認（他スレッドで状態が変わっている可能性）
-                    bool stillQueued = false;
-                    Application.Current.Dispatcher.Invoke(() => {
-                        stillQueued = next.Status == DownloadItemStatus.Queued;
-                    });
-
-                    if (stillQueued) {
-                        _ = Task.Run(() => ExecuteDownloadAsync(next));
-                    } else {
-                        _semaphore.Release();
-                    }
                 }
             } finally {
                 lock (_lockObject) {
@@ -136,24 +128,26 @@ namespace Libs {
                         item.Progress = 100;
                     });
 
+                    Logger.Download(item.Title, "Download completed successfully");
+
                     // 完了通知
                     if (_data.UseNotifications) {
                         ShowNotification(item);
                     }
                 }
             } catch (Exception ex) {
+                Logger.Error($"[Download] Failed: {item.Title}", ex);
                 Application.Current.Dispatcher.Invoke(() => {
                     item.Status = DownloadItemStatus.Failed;
                     item.ErrorMessage = ex.Message;
                 });
             } finally {
                 _activeDownloads.TryRemove(item.Id, out _);
-                _semaphore.Release();
 
                 // 完了済みは保存から除外される
                 QueueStorage.Save(_data.DownloadQueue);
 
-                // キュー処理を継続
+                // キュー処理を継続（空いたスロットで次のアイテムを処理）
                 ProcessQueue();
             }
         }
@@ -179,12 +173,8 @@ namespace Libs {
                 ? item.VideoFormatId
                 : $"{item.VideoFormatId}+{item.AudioFormatId}";
 
-            // デバッグ出力（ファイルに書き出し）
-            var logPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "", "queue_debug.log");
-            var logMsg = $"[{DateTime.Now:HH:mm:ss}] VideoFormatId={item.VideoFormatId}, AudioFormatId={item.AudioFormatId}, " +
-                         $"VideoExt={item.VideoExt}, AudioExt={item.AudioExt}, IsPackage={item.IsPackage}, " +
-                         $"originExt={originExt}, outputExt={outputExt}, formatId={formatId}, targetPath={targetPath}";
-            try { File.AppendAllText(logPath, logMsg + Environment.NewLine); } catch { }
+            // ダウンロード開始ログ
+            Logger.Download(item.Title, $"Starting download: formatId={formatId}, ext={outputExt}, path={targetPath}");
 
             // DLPオブジェクト構築（単一ダウンロードと同じ順序）
             var dlp = new DLP(item.Url);

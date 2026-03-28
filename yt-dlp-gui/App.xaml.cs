@@ -15,6 +15,10 @@ namespace yt_dlp_gui {
             var args = e.Args.ToList();
             LoadPath();
 
+            // ログ初期化と古いログの削除
+            Libs.Logger.Info("Application started");
+            Libs.Logger.CleanupOldLogs();
+
             // 設定ファイルから言語設定を読み込み
             var configPath = Path(Folders.root, AppName + ".yaml");
             var savedLanguage = string.Empty;

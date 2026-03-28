@@ -386,3 +386,6 @@ nul
 
 # Download queue storage
 download-queue.json
+
+# Screenshots (for documentation purposes only)
+Screenshots/

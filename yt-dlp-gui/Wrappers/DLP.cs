@@ -294,10 +294,8 @@ namespace yt_dlp_gui.Wrappers {
             };
             //Debug.WriteLine(Args);
             Debug.WriteLine($"{info.FileName} {info.Arguments}");
-            // ログ出力用パス
-            var logPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "", "queue_debug.log");
-            // ファイルにもコマンドラインを出力
-            try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] CMD: {info.FileName} {info.Arguments}{Environment.NewLine}"); } catch { }
+            // コマンドラインをログ出力
+            Libs.Logger.Command(info.FileName, info.Arguments);
             process.StartInfo = info;
             process.EnableRaisingEvents = true;
             process.OutputDataReceived += (s, e) => {
@@ -310,8 +308,8 @@ namespace yt_dlp_gui.Wrappers {
             process.ErrorDataReceived += (s, e) => {
                 Debug.WriteLine(e.Data, "ERR");
                 if (!string.IsNullOrWhiteSpace(e.Data)) {
-                    // stderrもログに出力
-                    try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] STDERR: {e.Data}{Environment.NewLine}"); } catch { }
+                    // stderrをログに出力
+                    Libs.Logger.CommandOutput(e.Data, isError: true);
                     stdall?.Invoke(e.Data);
                     stderr?.Invoke(e.Data);
                     if (ErrSign.IsMatch(e.Data)) {
@@ -327,7 +325,7 @@ namespace yt_dlp_gui.Wrappers {
             process.WaitForExit();
 
             // 終了コードをログに出力
-            try { File.AppendAllText(logPath, $"[{DateTime.Now:HH:mm:ss}] ExitCode: {process.ExitCode}{Environment.NewLine}"); } catch { }
+            Libs.Logger.CommandExit(process.ExitCode);
 
             return process;
         }

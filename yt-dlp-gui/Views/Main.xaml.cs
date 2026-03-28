@@ -379,19 +379,17 @@ namespace yt_dlp_gui.Views {
             if (Data.UseOutput) dlp.Output("%(title)s.%(ext)s"); //if not used config, default template
             ClearStatus();
 
-            // ログ出力用パス
-            var debugLogPath = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) ?? "", "queue_debug.log");
-            try { File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Starting Exec...{Environment.NewLine}"); } catch { }
+            Libs.Logger.Info($"[Analyze] Starting analysis for URL: {Data.Url}");
 
             dlp.Exec(null, std => {
                 //取得JSON
                 try {
-                    File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Received JSON length: {std?.Length ?? 0}, preview: {std?.Substring(0, Math.Min(std?.Length ?? 0, 200))}...{Environment.NewLine}");
+                    Libs.Logger.Debug($"[Analyze] Received JSON length: {std?.Length ?? 0}");
                     Data.Video = JsonConvert.DeserializeObject<Video>(std, new JsonSerializerSettings() {
                         NullValueHandling = NullValueHandling.Ignore
                     });
                 } catch (Exception ex) {
-                    File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] JSON Parse Error: {ex.Message}{Environment.NewLine}");
+                    Libs.Logger.Error("[Analyze] JSON Parse Error", ex);
                     throw;
                 }
 
@@ -451,10 +449,10 @@ namespace yt_dlp_gui.Views {
                 //Data.TargetName = GetValidFileName(Data.Video.title) + ".tmp"; //预设挡案名称
                 Data.TargetName = full; //预设挡案名称
 
-                File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Completed successfully{Environment.NewLine}");
+                Libs.Logger.Info("[GetInfo] Completed successfully");
             });
 
-            try { File.AppendAllText(debugLogPath, $"[{DateTime.Now:HH:mm:ss}] [GetInfo] Exec finished{Environment.NewLine}"); } catch { }
+            Libs.Logger.Info("[GetInfo] Exec finished");
 
             dlp.Err(DLP.DLPError.Sign, () => {
                 if (Data.UseCookie == UseCookie.WhenNeeded) {
@@ -844,18 +842,33 @@ namespace yt_dlp_gui.Views {
 
         // === Queue Event Handlers ===
 
-        private void Button_AddToQueue(object sender, RoutedEventArgs e) {
+        private async void Button_AddToQueue(object sender, RoutedEventArgs e) {
             var item = CreateDownloadItem();
             _downloadManager.Enqueue(item);
+
+            // ボタンフィードバック
+            if (sender is System.Windows.Controls.Button button) {
+                var originalContent = button.Content;
+                button.Content = new System.Windows.Controls.StackPanel {
+                    Orientation = System.Windows.Controls.Orientation.Horizontal,
+                    Margin = new Thickness(4, 0, 4, 0),
+                    Children = {
+                        new Controls.Icons { Size = 14, Kind = Controls.IconKind.CheckCircle },
+                        new TextBlock { Text = " Added!", Margin = new Thickness(2, 0, 0, 0) }
+                    }
+                };
+                button.IsEnabled = false;
+
+                await Task.Delay(1000);
+
+                button.Content = originalContent;
+                button.IsEnabled = Data.Enable.Download;
+            }
         }
 
         private DownloadItem CreateDownloadItem() {
-            // デバッグ出力（ファイルに書き出し）
-            var logPath = Path.Combine(App.AppPath, "queue_debug.log");
-            var logMsg = $"[{DateTime.Now:HH:mm:ss}] CreateDownloadItem: " +
-                         $"selectedVideo(id={Data.selectedVideo?.format_id}, video_ext={Data.selectedVideo?.video_ext}, type={Data.selectedVideo?.type}), " +
-                         $"selectedAudio(id={Data.selectedAudio?.format_id}, audio_ext={Data.selectedAudio?.audio_ext}, type={Data.selectedAudio?.type})";
-            try { File.AppendAllText(logPath, logMsg + Environment.NewLine); } catch { }
+            var title = Data.Video.title ?? "Unknown";
+            Libs.Logger.Info($"[Queue] Adding to queue: {title} (video={Data.selectedVideo?.format_id}, audio={Data.selectedAudio?.format_id})");
 
             return new DownloadItem {
                 Url = Data.Url,

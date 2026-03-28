@@ -805,7 +805,24 @@
             </Grid>
         </TabItem>
         <!-- Queue Tab -->
-        <TabItem Header="{Binding Source={x:Static app:App.Lang}, Path=Main.Queue}">
+        <TabItem>
+            <TabItem.Header>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Source={x:Static app:App.Lang}, Path=Main.Queue}"/>
+                    <TextBlock x:Name="QueueBadge" Text="{Binding QueuedCount, StringFormat=' ({0})'}">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding QueuedCount}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </TabItem.Header>
             <Grid Margin="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
