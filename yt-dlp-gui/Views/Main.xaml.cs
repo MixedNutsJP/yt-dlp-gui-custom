@@ -63,9 +63,9 @@ namespace yt_dlp_gui.Views {
             if (!Directory.Exists(Data.TargetPath)) {
                 Data.TargetPath = App.AppPath;
             }
-            //Default Temp Dir
+            //Default Temp Dir (use tmp folder in app directory)
             if (string.IsNullOrWhiteSpace(Data.PathTEMP) || !Directory.Exists(GetTempPath)) {
-                Data.PathTEMP = "%YTDLPGUI_TARGET%";
+                Data.PathTEMP = "%YTDLPGUI_LOCALE%";
             }
 
             //Monitor Clipboard
@@ -110,9 +110,12 @@ namespace yt_dlp_gui.Views {
             }
         }
         private string GetEnvPath(string path) {
+            // %YTDLPGUI_LOCALE% uses tmp subfolder in app directory
+            var localeTmpPath = Path.Combine(App.AppPath, "tmp");
+
             Dictionary<string, string> replacements = new() {
                 {"%YTDLPGUI_TARGET%", Data.TargetPath},
-                {"%YTDLPGUI_LOCALE%", App.AppPath}
+                {"%YTDLPGUI_LOCALE%", localeTmpPath}
             };
             foreach (KeyValuePair<string, string> pair in replacements) {
                 string placeholder = pair.Key;
@@ -133,7 +136,18 @@ namespace yt_dlp_gui.Views {
                     path = path.Replace("\\\\", "\\");
                 }
             }
-            return Environment.ExpandEnvironmentVariables(path);
+
+            // Ensure tmp directory exists if using locale path
+            var expandedPath = Environment.ExpandEnvironmentVariables(path);
+            if (expandedPath.StartsWith(localeTmpPath) && !Directory.Exists(localeTmpPath)) {
+                try {
+                    Directory.CreateDirectory(localeTmpPath);
+                } catch {
+                    // Ignore creation errors
+                }
+            }
+
+            return expandedPath;
         }
         private string GetTempPath {
             get => GetEnvPath(Data.PathTEMP);
