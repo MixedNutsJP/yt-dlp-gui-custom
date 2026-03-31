@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Libs {
     public partial class Util {
@@ -38,6 +39,15 @@ namespace Libs {
         public static bool UrlVaild(string url) {
             if (YoutubeIE.IsMatch(url)) return true;
             return false;
+        }
+
+        /// <summary>
+        /// 一般的なURLとして有効かどうかをチェック（YouTube以外も含む）
+        /// </summary>
+        public static bool IsValidUrl(string url) {
+            if (string.IsNullOrWhiteSpace(url)) return false;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
         }
     }
 }

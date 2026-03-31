@@ -110,8 +110,8 @@ namespace yt_dlp_gui.Views {
             }
         }
         private string GetEnvPath(string path) {
-            // %YTDLPGUI_LOCALE% uses tmp subfolder in app directory
-            var localeTmpPath = Path.Combine(App.AppPath, "tmp");
+            // %YTDLPGUI_LOCALE% uses temp subfolder in app directory
+            var localeTmpPath = Path.Combine(App.AppPath, "temp");
 
             Dictionary<string, string> replacements = new() {
                 {"%YTDLPGUI_TARGET%", Data.TargetPath},
@@ -177,9 +177,22 @@ namespace yt_dlp_gui.Views {
 
             var sc = new SharpClipboard();
             sc.ClipboardChanged += (s, e) => {
-                if (!Data.IsMonitor || Data.IsAnalyze || Data.IsDownload) return;
+                if (!Data.IsMonitor || Data.IsDownload) return;  // IsAnalyze チェックを削除
                 if (e.ContentType == SharpClipboard.ContentTypes.Text) {
-                    Data.ClipboardText = GetClipbaordText();
+                    var content = GetClipbaordText();
+                    var m = _matchUrls.Match(content);
+                    if (m.Success) {
+                        var capUrl = m.Value;
+                        // IsValidUrl を使用して全てのURLを許可（YouTube以外も含む）
+                        if (Util.IsValidUrl(capUrl) && capUrl != Data.Url) {
+                            Dispatcher.Invoke(() => {
+                                Data.Url = capUrl;
+                                if (!Data.IsAnalyze) {  // 解析中でなければ開始
+                                    Analyze_Start();
+                                }
+                            });
+                        }
+                    }
                 }
             };
         }

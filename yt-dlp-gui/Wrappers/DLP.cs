@@ -64,7 +64,13 @@ namespace yt_dlp_gui.Wrappers {
         }
         public DLP Temp(string path) {
             Options["--cache-dir"] = path.QP();
-            Options["--paths"] = path.QP("temp");
+            // --paths に temp: を追加（home: と共存させる）
+            if (Options.ContainsKey("--paths")) {
+                // 既存の --paths (home:) に追加
+                Options["--paths"] += " " + path.QP("temp");
+            } else {
+                Options["--paths"] = path.QP("temp");
+            }
             return this;
         }
         public DLP Proxy(string proxy_url, bool enable = true) {
@@ -236,7 +242,19 @@ namespace yt_dlp_gui.Wrappers {
             } else if (targetpath.getExt() != originext) {
                 Options["--remux-video"] = targetpath.getExt();
             }
-            Options["--output"] = Path.ChangeExtension(targetpath, ".%(ext)s").QP();
+
+            // 絶対パスを分解して home と output を別々に設定
+            // これにより --paths temp: が正しく機能する
+            var directory = Path.GetDirectoryName(targetpath);
+            var filename = Path.GetFileName(targetpath);
+
+            // home: ダウンロード先ディレクトリ
+            if (!string.IsNullOrEmpty(directory)) {
+                Options["--paths"] = directory.QP("home");
+            }
+
+            // output: 相対パス（ファイル名のみ）
+            Options["--output"] = Path.ChangeExtension(filename, ".%(ext)s").QP();
             Files.Add(targetpath);
             return this;
         }
