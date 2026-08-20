@@ -108,6 +108,23 @@ Main:
   Language: 言語
   LanguageSystem: システム既定
   LanguageRestartRequired: 変更を適用するには再起動が必要です。
+  # Queue Tab
+  Queue: キュー
+  AddToQueue: キューに追加
+  QueueStartAll: ダウンロード開始
+  QueueClearCompleted: 完了済みをクリア
+  QueueMaxConcurrent: 並列数
+  QueueDownloading: ダウンロード中
+  QueueWaiting: 待機中
+  QueueCompleted: 完了
+  QueueFailed: 失敗
+  QueueCancelled: キャンセル済み
+  QueueRetry: 再試行
+  QueueRemove: 削除
+  QueueMoveUp: 上に移動
+  QueueMoveDown: 下に移動
+  QueueOpenFolder: フォルダーを開く
+  QueueEmpty: キューは空です
 # Window - About
 About:
   About: このソフトについて

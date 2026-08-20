@@ -74,13 +74,17 @@ namespace Libs {
 
                 if (slotsAvailable <= 0) return;
 
-                // 待機中のアイテムを取得（空きスロット分だけ）
+                // 待機中のアイテムを取得し、同一 Dispatcher.Invoke 内で Downloading に予約遷移
+                // （次回 ProcessQueue で再 Take されないように二重起動を防ぐ）
                 var queuedItems = new System.Collections.Generic.List<DownloadItem>();
                 Application.Current.Dispatcher.Invoke(() => {
                     queuedItems = _data.DownloadQueue
                         .Where(x => x.Status == DownloadItemStatus.Queued)
                         .Take(slotsAvailable)
                         .ToList();
+                    foreach (var item in queuedItems) {
+                        item.Status = DownloadItemStatus.Downloading;
+                    }
                 });
 
                 // 各アイテムに対してダウンロードタスクを開始
@@ -102,17 +106,24 @@ namespace Libs {
         private async Task ExecuteDownloadAsync(DownloadItem item) {
             var cts = new CancellationTokenSource();
             DLP? dlp = null;
+            bool registered = false;
 
             try {
+                dlp = BuildDLP(item);
+
+                // 二重起動ガード: 既に同じ ID が登録されていれば早期 return
+                if (!_activeDownloads.TryAdd(item.Id, (dlp, cts))) {
+                    Logger.Info($"[Queue] Skipped duplicate launch: {item.Title}");
+                    return;
+                }
+                registered = true;
+
                 Application.Current.Dispatcher.Invoke(() => {
                     item.Status = DownloadItemStatus.Downloading;
                     item.Progress = 0;
                     item.Speed = 0;
                     item.ETA = string.Empty;
                 });
-
-                dlp = BuildDLP(item);
-                _activeDownloads[item.Id] = (dlp, cts);
 
                 var reporter = new ItemStatusReporter(item);
 
@@ -123,26 +134,39 @@ namespace Libs {
                 });
 
                 if (!cts.IsCancellationRequested) {
+                    var shouldNotify = false;
                     Application.Current.Dispatcher.Invoke(() => {
-                        item.Status = DownloadItemStatus.Completed;
-                        item.Progress = 100;
+                        // キャンセル後の完了は Cancelled のまま保持
+                        if (item.Status != DownloadItemStatus.Cancelled) {
+                            item.Status = DownloadItemStatus.Completed;
+                            item.Progress = 100;
+                            shouldNotify = true;
+                        }
                     });
 
-                    Logger.Download(item.Title, "Download completed successfully");
+                    if (shouldNotify) {
+                        Logger.Download(item.Title, "Download completed successfully");
 
-                    // 完了通知
-                    if (_data.UseNotifications) {
-                        ShowNotification(item);
+                        // 完了通知
+                        if (_data.UseNotifications) {
+                            ShowNotification(item);
+                        }
                     }
                 }
             } catch (Exception ex) {
                 Logger.Error($"[Download] Failed: {item.Title}", ex);
                 Application.Current.Dispatcher.Invoke(() => {
-                    item.Status = DownloadItemStatus.Failed;
-                    item.ErrorMessage = ex.Message;
+                    // キャンセル起因の例外で Cancelled を Failed に上書きしない
+                    if (item.Status != DownloadItemStatus.Cancelled) {
+                        item.Status = DownloadItemStatus.Failed;
+                        item.ErrorMessage = ex.Message;
+                    }
                 });
             } finally {
-                _activeDownloads.TryRemove(item.Id, out _);
+                // 自分が登録したエントリのみ削除（二重起動ガードで return した側は触らない）
+                if (registered) {
+                    _activeDownloads.TryRemove(item.Id, out _);
+                }
 
                 // 完了済みは保存から除外される
                 QueueStorage.Save(_data.DownloadQueue);
@@ -277,7 +301,7 @@ namespace Libs {
         public void Cancel(Guid id) {
             if (_activeDownloads.TryGetValue(id, out var active)) {
                 active.CTS.Cancel();
-                active.Process.Close();
+                Task.Run(() => active.Process.Kill());
             }
 
             Application.Current.Dispatcher.Invoke(() => {
@@ -296,7 +320,8 @@ namespace Libs {
         public void CancelAll() {
             foreach (var kvp in _activeDownloads) {
                 kvp.Value.CTS.Cancel();
-                kvp.Value.Process.Close();
+                var process = kvp.Value.Process;
+                Task.Run(() => process.Kill());
             }
 
             Application.Current.Dispatcher.Invoke(() => {
@@ -306,6 +331,19 @@ namespace Libs {
             });
 
             QueueStorage.Save(_data.DownloadQueue);
+        }
+
+        /// <summary>
+        /// アプリ終了時の後始末: 進行中のyt-dlpプロセスをKillして残留を防ぐ。
+        /// ステータスは変更せず（Downloadingのまま）、次回起動時にQueueStorage.LoadでQueuedに戻る。
+        /// </summary>
+        public void Shutdown() {
+            foreach (var kvp in _activeDownloads) {
+                try {
+                    kvp.Value.CTS.Cancel();
+                    kvp.Value.Process.Kill();
+                } catch { }
+            }
         }
 
         /// <summary>

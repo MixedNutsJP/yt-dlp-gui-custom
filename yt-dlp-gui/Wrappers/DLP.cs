@@ -358,6 +358,20 @@ namespace yt_dlp_gui.Wrappers {
             }
             return this;
         }
+        public DLP Kill() {
+            Debug.WriteLine("KILL");
+            try {
+                if (process != null && !process.HasExited) {
+                    process.Kill(entireProcessTree: true);
+                    process.WaitForExit(3000);
+                }
+            } catch { }
+            if (Options.ContainsKey("--output")) {
+                var tempfile = Options["--output"];
+                if (!IsLive && File.Exists(tempfile)) File.Delete(tempfile);
+            }
+            return this;
+        }
         public DLP Err(DLPError err, Action callback) {
             if (StdErr.Contains(err)) callback.Invoke();
 

@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: Locale
   TemporarySystem: Системна
   TemporaryBrowse: Вибрати...
+  # Queue Tab
+  Queue: Черга
+  AddToQueue: Додати до черги
+  QueueStartAll: Розпочати завантаження
+  QueueClearCompleted: Очистити завершені
+  QueueMaxConcurrent: Паралельно
+  QueueDownloading: Завантажується
+  QueueWaiting: Очікування
+  QueueCompleted: Завершено
+  QueueFailed: Помилка
+  QueueCancelled: Скасовано
+  QueueRetry: Повторити
+  QueueRemove: Видалити
+  QueueMoveUp: Угору
+  QueueMoveDown: Униз
+  QueueOpenFolder: Відкрити папку
+  QueueEmpty: Черга порожня
 # Window - About
 About:
   About: Про програму

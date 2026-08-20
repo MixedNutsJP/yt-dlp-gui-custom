@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: Locale
   TemporarySystem: Sistema
   TemporaryBrowse: Sfoglia...
+  # Queue Tab
+  Queue: Coda
+  AddToQueue: Aggiungi alla coda
+  QueueStartAll: Avvia download
+  QueueClearCompleted: Cancella completati
+  QueueMaxConcurrent: Concorrenti
+  QueueDownloading: Download in corso
+  QueueWaiting: In attesa
+  QueueCompleted: Completato
+  QueueFailed: Fallito
+  QueueCancelled: Annullato
+  QueueRetry: Riprova
+  QueueRemove: Rimuovi
+  QueueMoveUp: Sposta su
+  QueueMoveDown: Sposta giù
+  QueueOpenFolder: Apri cartella
+  QueueEmpty: La coda è vuota
 # Window - About
 About:
   About: Informazioni su

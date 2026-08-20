@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: 本地
   TemporarySystem: 系統
   TemporaryBrowse: 瀏覽...
+  # Queue Tab
+  Queue: 佇列
+  AddToQueue: 加入佇列
+  QueueStartAll: 開始下載
+  QueueClearCompleted: 清除已完成
+  QueueMaxConcurrent: 並行
+  QueueDownloading: 下載中
+  QueueWaiting: 等待中
+  QueueCompleted: 已完成
+  QueueFailed: 失敗
+  QueueCancelled: 已取消
+  QueueRetry: 重試
+  QueueRemove: 移除
+  QueueMoveUp: 上移
+  QueueMoveDown: 下移
+  QueueOpenFolder: 開啟資料夾
+  QueueEmpty: 佇列是空的
 # Window - About
 About:
   About: 關於

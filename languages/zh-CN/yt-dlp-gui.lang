@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: 本地
   TemporarySystem: 系统
   TemporaryBrowse: 浏览...
+  # Queue Tab
+  Queue: 队列
+  AddToQueue: 添加到队列
+  QueueStartAll: 开始下载
+  QueueClearCompleted: 清除已完成
+  QueueMaxConcurrent: 并发
+  QueueDownloading: 下载中
+  QueueWaiting: 等待中
+  QueueCompleted: 已完成
+  QueueFailed: 失败
+  QueueCancelled: 已取消
+  QueueRetry: 重试
+  QueueRemove: 移除
+  QueueMoveUp: 上移
+  QueueMoveDown: 下移
+  QueueOpenFolder: 打开文件夹
+  QueueEmpty: 队列为空
 # Window - About
 About:
   About: 关于

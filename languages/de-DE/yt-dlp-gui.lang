@@ -67,6 +67,23 @@ Main:
   Record: Aufnehmen
   Cancel: Abbrechen
   Stop: Anhalten
+  # Queue Tab
+  Queue: Warteschlange
+  AddToQueue: Zur Warteschlange
+  QueueStartAll: Download starten
+  QueueClearCompleted: Abgeschlossene löschen
+  QueueMaxConcurrent: Parallel
+  QueueDownloading: Wird heruntergeladen
+  QueueWaiting: Wartet
+  QueueCompleted: Abgeschlossen
+  QueueFailed: Fehlgeschlagen
+  QueueCancelled: Abgebrochen
+  QueueRetry: Wiederholen
+  QueueRemove: Entfernen
+  QueueMoveUp: Nach oben
+  QueueMoveDown: Nach unten
+  QueueOpenFolder: Ordner öffnen
+  QueueEmpty: Warteschlange ist leer
 About:
   About: Über
   Website: Webseite

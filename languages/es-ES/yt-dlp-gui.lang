@@ -104,6 +104,23 @@ Main:
   TemporaryLocale: Local
   TemporarySystem: Sistema
   TemporaryBrowse: Navegar...
+  # Queue Tab
+  Queue: Cola
+  AddToQueue: Añadir a la cola
+  QueueStartAll: Iniciar descarga
+  QueueClearCompleted: Limpiar completados
+  QueueMaxConcurrent: Concurrentes
+  QueueDownloading: Descargando
+  QueueWaiting: En espera
+  QueueCompleted: Completado
+  QueueFailed: Fallido
+  QueueCancelled: Cancelado
+  QueueRetry: Reintentar
+  QueueRemove: Eliminar
+  QueueMoveUp: Mover arriba
+  QueueMoveDown: Mover abajo
+  QueueOpenFolder: Abrir carpeta
+  QueueEmpty: La cola está vacía
 # Window - About
 About:
   About: Acerca

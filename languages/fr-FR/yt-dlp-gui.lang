@@ -104,6 +104,23 @@ Main:
   TemporaryLocale: Locale
   TemporarySystem: Système
   TemporaryBrowse: Parcourir...
+  # Queue Tab
+  Queue: File d'attente
+  AddToQueue: Ajouter à la file
+  QueueStartAll: Démarrer le téléchargement
+  QueueClearCompleted: Effacer les terminés
+  QueueMaxConcurrent: Simultanés
+  QueueDownloading: Téléchargement
+  QueueWaiting: En attente
+  QueueCompleted: Terminé
+  QueueFailed: Échoué
+  QueueCancelled: Annulé
+  QueueRetry: Réessayer
+  QueueRemove: Supprimer
+  QueueMoveUp: Monter
+  QueueMoveDown: Descendre
+  QueueOpenFolder: Ouvrir le dossier
+  QueueEmpty: La file est vide
 # Window - About
 About:
   About: A propos

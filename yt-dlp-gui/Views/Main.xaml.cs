@@ -806,6 +806,8 @@ namespace yt_dlp_gui.Views {
             Data.Top = Top;
             Data.Width = Width;
             Data.Height = Height;
+
+            _downloadManager?.Shutdown();
         }
         private void ComboBox_TextChanged(object sender, TextChangedEventArgs e) {
             var combo = sender as System.Windows.Controls.ComboBox;

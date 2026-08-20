@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: 지역
   TemporarySystem: 시스템
   TemporaryBrowse: 검색...
+  # Queue Tab
+  Queue: 대기열
+  AddToQueue: 대기열에 추가
+  QueueStartAll: 다운로드 시작
+  QueueClearCompleted: 완료된 항목 지우기
+  QueueMaxConcurrent: 동시
+  QueueDownloading: 다운로드 중
+  QueueWaiting: 대기 중
+  QueueCompleted: 완료
+  QueueFailed: 실패
+  QueueCancelled: 취소됨
+  QueueRetry: 재시도
+  QueueRemove: 제거
+  QueueMoveUp: 위로
+  QueueMoveDown: 아래로
+  QueueOpenFolder: 폴더 열기
+  QueueEmpty: 대기열이 비어 있습니다
 # Window - About
 About:
   About: 정보

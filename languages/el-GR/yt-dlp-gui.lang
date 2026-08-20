@@ -105,6 +105,23 @@ Main:
   TemporaryLocale: Τοποθεσία
   TemporarySystem: Σύστημα
   TemporaryBrowse: Αναζήτηση...
+  # Queue Tab
+  Queue: Ουρά
+  AddToQueue: Προσθήκη στην ουρά
+  QueueStartAll: Έναρξη λήψης
+  QueueClearCompleted: Εκκαθάριση ολοκληρωμένων
+  QueueMaxConcurrent: Παράλληλα
+  QueueDownloading: Λήψη
+  QueueWaiting: Αναμονή
+  QueueCompleted: Ολοκληρώθηκε
+  QueueFailed: Απέτυχε
+  QueueCancelled: Ακυρώθηκε
+  QueueRetry: Επανάληψη
+  QueueRemove: Αφαίρεση
+  QueueMoveUp: Πάνω
+  QueueMoveDown: Κάτω
+  QueueOpenFolder: Άνοιγμα φακέλου
+  QueueEmpty: Η ουρά είναι κενή
 # Window - About
 About:
   About: Σχετικά με

@@ -109,6 +109,23 @@ Main:
   Language: Language
   LanguageSystem: System Default
   LanguageRestartRequired: Restart required to apply language change.
+  # Queue Tab
+  Queue: Queue
+  AddToQueue: Add to Queue
+  QueueStartAll: Start Download
+  QueueClearCompleted: Clear Completed
+  QueueMaxConcurrent: Concurrent
+  QueueDownloading: Downloading
+  QueueWaiting: Waiting
+  QueueCompleted: Completed
+  QueueFailed: Failed
+  QueueCancelled: Cancelled
+  QueueRetry: Retry
+  QueueRemove: Remove
+  QueueMoveUp: Move Up
+  QueueMoveDown: Move Down
+  QueueOpenFolder: Open Folder
+  QueueEmpty: Queue is empty
 # Window - About
 About:
   About: About

@@ -67,6 +67,23 @@ Main:
   Record: Записать
   Cancel: Отмена
   Stop: Стоп
+  # Queue Tab
+  Queue: Очередь
+  AddToQueue: Добавить в очередь
+  QueueStartAll: Начать загрузку
+  QueueClearCompleted: Очистить завершённые
+  QueueMaxConcurrent: Параллельно
+  QueueDownloading: Загружается
+  QueueWaiting: Ожидание
+  QueueCompleted: Завершено
+  QueueFailed: Ошибка
+  QueueCancelled: Отменено
+  QueueRetry: Повторить
+  QueueRemove: Удалить
+  QueueMoveUp: Вверх
+  QueueMoveDown: Вниз
+  QueueOpenFolder: Открыть папку
+  QueueEmpty: Очередь пуста
 About:
   About: О программе...
   Website: Вебсайт
