@@ -99,7 +99,7 @@ If you encounter any issues, please include the log file when reporting:
 > Logs record the URLs and titles you downloaded. Review a log before attaching it to a public issue.
 
 ### Disclaimer
-This tool is intended for legal purposes only. Mixed Nuts assumes no responsibility for any damages or issues arising from the use of this tool.
+This tool is intended for legal purposes only. MixedNuts assumes no responsibility for any damages or issues arising from the use of this tool.
 
 ---
 
@@ -195,4 +195,4 @@ This tool is intended for legal purposes only. Mixed Nuts assumes no responsibil
 > ログにはダウンロードしたURLとタイトルが記録されます。公開のIssueに添付する前に内容をご確認ください。
 
 ### 免責事項
-本ツールは合法的な目的でのみ使用してください。本ツールで生じた損害等に関してMixed Nutsでは一切責任を負いません。
+本ツールは合法的な目的でのみ使用してください。本ツールで生じた損害等に関してMixedNutsでは一切責任を負いません。
