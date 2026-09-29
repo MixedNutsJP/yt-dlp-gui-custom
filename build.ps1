@@ -19,6 +19,16 @@ $RequiredFiles = @(
     "ffprobe.exe"
 )
 
+# 配布ZIPから除外するもの
+# ビルド出力フォルダはそのまま実行環境になるため、動かすと個人データが溜まる。
+# これらを同梱したまま公開するとダウンロード履歴やローカルパスが流出する。
+$ZipExclude = @(
+    "logs",                 # ダウンロードしたURL・タイトルが記録される
+    "temp",                 # ダウンロード中の一時ファイル
+    "download-queue.json",  # キューの中身
+    "yt-dlp-gui.yaml"       # ローカルパスを含む個人の設定
+)
+
 Write-Host "=== yt-dlp-gui Build Script ===" -ForegroundColor Cyan
 Write-Host "Configuration: $Configuration"
 Write-Host ""
@@ -59,8 +69,42 @@ if ($CreateZip) {
         Remove-Item $ZipPath -Force
     }
 
-    # ZIP作成
-    Compress-Archive -Path "$OutputDir\*" -DestinationPath $ZipPath -Force
+    # 除外対象を抜いた状態を一旦別フォルダに用意してから圧縮する
+    # （Compress-Archive には除外指定が無いため）
+    $StageDir = Join-Path ([System.IO.Path]::GetTempPath()) ("yt-dlp-gui-pkg-" + [guid]::NewGuid().ToString("N"))
+    New-Item -ItemType Directory -Path $StageDir -Force | Out-Null
+    try {
+        Get-ChildItem $OutputDir | Where-Object {
+            $ZipExclude -notcontains $_.Name -and $_.Extension -ne ".pdb"
+        } | ForEach-Object {
+            Copy-Item $_.FullName -Destination $StageDir -Recurse -Force
+        }
+
+        foreach ($name in $ZipExclude) {
+            if (Test-Path (Join-Path $OutputDir $name)) {
+                Write-Host "  Excluded: $name" -ForegroundColor Gray
+            }
+        }
+
+        Compress-Archive -Path "$StageDir\*" -DestinationPath $ZipPath -Force
+    } finally {
+        Remove-Item $StageDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+
+    # 除外漏れがないか検証する。漏れたZIPは配布事故になるので消して失敗させる。
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    $archive = [System.IO.Compression.ZipFile]::OpenRead($ZipPath)
+    $leaked = @($archive.Entries | ForEach-Object { $_.FullName.Replace([char]92, [char]47) } | Where-Object {
+        $entry = $_
+        ($ZipExclude | Where-Object { $entry -eq $_ -or $entry.StartsWith("$_/") }).Count -gt 0
+    })
+    $archive.Dispose()
+    if ($leaked.Count -gt 0) {
+        Remove-Item $ZipPath -Force
+        Write-Host "Excluded files leaked into the ZIP, archive deleted:" -ForegroundColor Red
+        $leaked | ForEach-Object { Write-Host "  $_" -ForegroundColor Red }
+        exit 1
+    }
 
     $ZipSize = [math]::Round((Get-Item $ZipPath).Length / 1MB, 2)
     Write-Host "ZIP created: $ZipName ($ZipSize MB)" -ForegroundColor Green
