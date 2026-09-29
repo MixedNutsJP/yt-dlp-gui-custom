@@ -31,6 +31,10 @@ namespace yt_dlp_gui.Wrappers {
             //Options["--no-part"] = "";
             Options["--force-overwrites"] = "";
             Options["--ignore-config"] = "";
+            // yt-dlp は既定でソケットタイムアウトを持たないため、接続が無反応になると
+            // エラーにならず永久に待ち続ける（リトライは失敗時にしか働かないので効かない）。
+            // 明示しておくことで停止した読み取りが失敗扱いになり、既定のリトライに乗る。
+            Options["--socket-timeout"] = "30";
             Options["--ffmpeg-location"] = Path_FFMPEG.QP();
             if (Type == DLPType.yd_dlp) {
                 Options["--progress-template"] = "\""
