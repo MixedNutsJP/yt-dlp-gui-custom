@@ -260,6 +260,34 @@ namespace yt_dlp_gui.Wrappers {
             Files.Add(targetpath);
             return this;
         }
+        /// <summary>
+        /// 画質プリセット指定でのダウンロード。
+        /// 具体的な format_id ではなくセレクタ式（フォールバック付き）を渡すため、
+        /// 動画ごとに取得可能な画質へ yt-dlp 側で自動的に切り替わる。
+        /// </summary>
+        public DLP DownloadQuality(string selector, string targetpath, string container) {
+            Debug.WriteLine($"selector:{selector} path:{targetpath}", "DownloadQuality");
+            // 並び順は yt-dlp の既定（品質の高い順）に任せる。これにより解像度指定が
+            // 該当しなかった場合のフォールバックが最大画質になる。
+            Options["--format"] = selector.QS();
+            // どのフォーマットが選ばれるか事前に確定しないため、コンテナを固定して
+            // 出力ファイル名を予測可能にする（--merge-output-format はマージ時、
+            // --remux-video は単一ファイルが別コンテナだった場合に効く）
+            if (!string.IsNullOrWhiteSpace(container)) {
+                Options["--merge-output-format"] = container;
+                Options["--remux-video"] = container;
+            }
+
+            // --output が絶対パスだと yt-dlp は --paths temp: を無視するため
+            // ディレクトリは home: に分離し、--output はファイル名のみにする
+            var directory = Path.GetDirectoryName(targetpath);
+            if (!string.IsNullOrEmpty(directory)) {
+                Options["[paths:home]"] = directory.QP("home");
+            }
+            Options["--output"] = Path.ChangeExtension(Path.GetFileName(targetpath), ".%(ext)s").QP();
+            Files.Add(targetpath);
+            return this;
+        }
         public DLP DownloadVideo(string format_id, string source_ext, string targetpath) {
             Debug.WriteLine($"id:{format_id} source:{source_ext} path:{targetpath}", "DownloadVideo");
             Options["--format"] = format_id;

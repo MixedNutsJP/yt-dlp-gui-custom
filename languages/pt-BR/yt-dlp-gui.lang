@@ -121,6 +121,15 @@ Main:
   QueueMoveDown: Mover para baixo
   QueueOpenFolder: Abrir pasta
   QueueEmpty: A fila está vazia
+  # Queue Tab - Quality preset
+  QueueQuality: Qualidade
+  QueueQualityHelper: Qualidade aplicada aos itens adicionados à fila. O máximo e o mínimo são detectados por vídeo. Se a resolução solicitada não estiver disponível, o máximo será usado.
+  QualityCurrent: Conforme selecionado
+  QualityMax: Máxima (auto)
+  QualityHigh: Alta (1080p)
+  QualityMedium: Média (720p)
+  QualityLow: Baixa (480p)
+  QualityMin: Mínima (auto)
 # Window - About
 About:
   About: Sobre este software

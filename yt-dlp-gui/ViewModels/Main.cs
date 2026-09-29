@@ -276,6 +276,8 @@ namespace yt_dlp_gui.Views {
             public IEnumerable<DownloadItem> CompletedItems => DownloadQueue.CollectionView
                 .Where(x => x.Status == DownloadItemStatus.Completed);
             public int MaxConcurrentDownloads { get; set; } = 2;
+            // キュー追加時に適用する画質指定（Current はメイン画面の「映像」選択をそのまま使う）
+            public QualityPreference QueueQuality { get; set; } = QualityPreference.Current;
             public int ActiveDownloadCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Downloading);
             public int QueuedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Queued);
             public int CompletedCount => DownloadQueue.Count(x => x.Status == DownloadItemStatus.Completed);
@@ -448,6 +450,7 @@ namespace yt_dlp_gui.Views {
 
             [Description("Download Queue")]
             [YamlMember(Order = 1501)] public int MaxConcurrentDownloads { get; set; } = 2;
+            [YamlMember(Order = 1502)] public QualityPreference QueueQuality { get; set; } = QualityPreference.Current;
 
             [Description("Last Checking Update Date")]
             [YamlMember(Order = 9001)] public string LastVersion { get; set; } = string.Empty;

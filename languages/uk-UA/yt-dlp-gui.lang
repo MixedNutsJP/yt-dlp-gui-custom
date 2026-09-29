@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: Униз
   QueueOpenFolder: Відкрити папку
   QueueEmpty: Черга порожня
+  # Queue Tab - Quality preset
+  QueueQuality: Якість
+  QueueQualityHelper: Якість, що застосовується до елементів, доданих до черги. Максимум і мінімум визначаються для кожного відео. Якщо потрібної роздільної здатності немає, використовується максимум.
+  QualityCurrent: Як вибрано
+  QualityMax: Максимальна (авто)
+  QualityHigh: Висока (1080p)
+  QualityMedium: Середня (720p)
+  QualityLow: Низька (480p)
+  QualityMin: Мінімальна (авто)
 # Window - About
 About:
   About: Про програму

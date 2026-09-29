@@ -109,6 +109,16 @@ namespace yt_dlp_gui.Models {
         [YamlMember(Order = 1026)] public string Stop { get; set; } = "Stop";
         [YamlMember(Order = 1027)] public string AddToQueue { get; set; } = "Add to Queue";
 
+        [Description("Queue Tab - Quality preset")]
+        [YamlMember(Order = 1320)] public string QueueQuality { get; set; } = "Quality";
+        [YamlMember(Order = 1321)] public string QueueQualityHelper { get; set; } = "Quality applied to items added to the queue. Max and Min are detected per video. If the requested resolution is not available, it falls back to Max.";
+        [YamlMember(Order = 1322)] public string QualityCurrent { get; set; } = "As selected";
+        [YamlMember(Order = 1323)] public string QualityMax { get; set; } = "Max (auto)";
+        [YamlMember(Order = 1324)] public string QualityHigh { get; set; } = "High (1080p)";
+        [YamlMember(Order = 1325)] public string QualityMedium { get; set; } = "Medium (720p)";
+        [YamlMember(Order = 1326)] public string QualityLow { get; set; } = "Low (480p)";
+        [YamlMember(Order = 1327)] public string QualityMin { get; set; } = "Min (auto)";
+
         [Description("Main Tab - Thumbnail")]
         [YamlMember(Order = 1031)] public string SaveAs { get; set; } = "Save As...";
         [YamlMember(Order = 1032)] public string Thumbnail { get; set; } = "Thumbnail";

@@ -591,6 +591,20 @@
                                 <TextBlock Margin="2,0,0,0" d:Text="Download" Text="{Binding ExecText}"/>
                             </StackPanel>
                         </Button>
+                        <!-- Queue quality preset (applied when adding to the queue) -->
+                        <TextBlock Text="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueQuality}"
+                                   VerticalAlignment="Center" Margin="8,0,4,0"/>
+                        <ComboBox SelectedValue="{Binding QueueQuality}" SelectedValuePath="Tag" Margin="0,2"
+                                  VerticalAlignment="Center" MinWidth="104"
+                                  ToolTip="{Binding Source={x:Static app:App.Lang}, Path=Main.QueueQualityHelper}">
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityCurrent}" Tag="{x:Static m:QualityPreference.Current}"/>
+                            <Separator/>
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityMax}" Tag="{x:Static m:QualityPreference.Max}"/>
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityHigh}" Tag="{x:Static m:QualityPreference.High}"/>
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityMedium}" Tag="{x:Static m:QualityPreference.Medium}"/>
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityLow}" Tag="{x:Static m:QualityPreference.Low}"/>
+                            <ComboBoxItem Content="{Binding Source={x:Static app:App.Lang}, Path=Main.QualityMin}" Tag="{x:Static m:QualityPreference.Min}"/>
+                        </ComboBox>
                         <!-- Add to Queue button -->
                         <Button IsEnabled="{Binding Enable.Download}" Margin="2" Click="Button_AddToQueue" Cursor="Hand">
                             <StackPanel Orientation="Horizontal" Margin="4,0">
@@ -898,6 +912,20 @@
 
                                             <!-- Status info -->
                                             <StackPanel Orientation="Horizontal">
+                                                <!-- Quality preset badge (preset items only) -->
+                                                <TextBlock FontSize="10" Foreground="#FFB08CE0" Margin="0,0,8,0"
+                                                           Text="{Binding QualityText}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasQualityPreset}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
                                                 <TextBlock FontSize="10" Margin="0,0,8,0">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">

@@ -20,6 +20,11 @@ namespace yt_dlp_gui.Models {
         public bool IsPackage { get; set; } = false;  // パッケージ形式（映像+音声一体型）かどうか
         public string OutputExt { get; set; } = string.Empty;  // ユーザーが選択した出力拡張子
 
+        // 画質指定。Current の場合は上の VideoFormatId / AudioFormatId をそのまま使う。
+        // プリセットの場合は解像度ベースのセレクタ式に変換され、動画ごとに
+        // 取得可能な画質へ yt-dlp 側でフォールバックする。
+        public QualityPreference Quality { get; set; } = QualityPreference.Current;
+
         public DownloadItemStatus Status { get; set; } = DownloadItemStatus.Queued;
 
         // 完了後の実際のファイルパス（フォルダを開く機能用）
@@ -60,6 +65,13 @@ namespace yt_dlp_gui.Models {
             DownloadItemStatus.Cancelled => "キャンセル",
             _ => ""
         };
+
+        // 画質プリセットのラベル（プリセット指定時のみキュー一覧に表示する）
+        [JsonIgnore]
+        public string QualityText => QualitySelector.Label(Quality);
+
+        [JsonIgnore]
+        public bool HasQualityPreset => QualitySelector.IsPreset(Quality);
 
         [JsonIgnore]
         public bool IsQueued => Status == DownloadItemStatus.Queued;

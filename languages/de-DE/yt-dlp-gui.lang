@@ -84,6 +84,15 @@ Main:
   QueueMoveDown: Nach unten
   QueueOpenFolder: Ordner öffnen
   QueueEmpty: Warteschlange ist leer
+  # Queue Tab - Quality preset
+  QueueQuality: Qualität
+  QueueQualityHelper: Qualität für zur Warteschlange hinzugefügte Einträge. Max und Min werden pro Video ermittelt. Ist die gewünschte Auflösung nicht verfügbar, wird auf Max zurückgegriffen.
+  QualityCurrent: Wie ausgewählt
+  QualityMax: Max (auto)
+  QualityHigh: Hoch (1080p)
+  QualityMedium: Mittel (720p)
+  QualityLow: Niedrig (480p)
+  QualityMin: Min (auto)
 About:
   About: Über
   Website: Webseite

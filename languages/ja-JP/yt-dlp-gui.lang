@@ -125,6 +125,15 @@ Main:
   QueueMoveDown: 下に移動
   QueueOpenFolder: フォルダーを開く
   QueueEmpty: キューは空です
+  # Queue Tab - Quality preset
+  QueueQuality: 画質
+  QueueQualityHelper: キューに追加する際に適用する画質です。最大・最小は動画ごとに自動取得します。指定した解像度が無い場合は最大画質にフォールバックします。
+  QualityCurrent: 選択どおり
+  QualityMax: 最大 (自動)
+  QualityHigh: 高 (1080p)
+  QualityMedium: 中 (720p)
+  QualityLow: 低 (480p)
+  QualityMin: 最小 (自動)
 # Window - About
 About:
   About: このソフトについて

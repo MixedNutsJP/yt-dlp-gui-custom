@@ -84,6 +84,15 @@ Main:
   QueueMoveDown: Вниз
   QueueOpenFolder: Открыть папку
   QueueEmpty: Очередь пуста
+  # Queue Tab - Quality preset
+  QueueQuality: Качество
+  QueueQualityHelper: Качество, применяемое к элементам, добавляемым в очередь. Максимум и минимум определяются для каждого видео. Если запрошенное разрешение недоступно, используется максимум.
+  QualityCurrent: Как выбрано
+  QualityMax: Максимальное (авто)
+  QualityHigh: Высокое (1080p)
+  QualityMedium: Среднее (720p)
+  QualityLow: Низкое (480p)
+  QualityMin: Минимальное (авто)
 About:
   About: О программе...
   Website: Вебсайт

@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: Przesuń w dół
   QueueOpenFolder: Otwórz folder
   QueueEmpty: Kolejka jest pusta
+  # Queue Tab - Quality preset
+  QueueQuality: Jakość
+  QueueQualityHelper: Jakość stosowana do elementów dodawanych do kolejki. Maksimum i minimum są wykrywane dla każdego filmu. Jeśli żądana rozdzielczość jest niedostępna, używane jest maksimum.
+  QualityCurrent: Zgodnie z wyborem
+  QualityMax: Maksymalna (auto)
+  QualityHigh: Wysoka (1080p)
+  QualityMedium: Średnia (720p)
+  QualityLow: Niska (480p)
+  QualityMin: Minimalna (auto)
 # Window - About
 About:
   About: O programie

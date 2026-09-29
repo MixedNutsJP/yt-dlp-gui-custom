@@ -218,11 +218,20 @@ namespace Libs {
                .LimitRate(item.LimitRate ?? "")
                .DownloadSections(item.TimeRange ?? "");
 
-            // 埋め込み設定とダウンロード（単一ダウンロードと同じ順序）
+            // 埋め込み設定（単一ダウンロードと同じ順序）
             dlp.EmbedChapters(item.EmbedChapters)
                .Thumbnail(item.SaveThumbnail, targetPath, item.EmbedThumbnail)
-               .Subtitle(item.SubtitleLang ?? "", targetPath, item.EmbedSubtitles)
-               .DownloadFormat(formatId, targetPath, originExt);
+               .Subtitle(item.SubtitleLang ?? "", targetPath, item.EmbedSubtitles);
+
+            if (QualitySelector.IsPreset(item.Quality)) {
+                // 画質プリセット: キュー追加時の format_id は他の動画には通用しないため、
+                // 解像度ベースのセレクタ式に変換して yt-dlp 側でフォールバックさせる
+                var selector = QualitySelector.BuildFormat(item.Quality);
+                Logger.Download(item.Title, $"Quality preset {item.Quality}: -f {selector}");
+                dlp.DownloadQuality(selector, targetPath, outputExt);
+            } else {
+                dlp.DownloadFormat(formatId, targetPath, originExt);
+            }
 
             return dlp;
         }

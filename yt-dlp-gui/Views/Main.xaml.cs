@@ -897,9 +897,10 @@ namespace yt_dlp_gui.Views {
 
         private DownloadItem CreateDownloadItem() {
             var title = Data.Video.title ?? "Unknown";
-            Libs.Logger.Info($"[Queue] Adding to queue: {title} (video={Data.selectedVideo?.format_id}, audio={Data.selectedAudio?.format_id})");
+            Libs.Logger.Info($"[Queue] Adding to queue: {title} (quality={Data.QueueQuality}, video={Data.selectedVideo?.format_id}, audio={Data.selectedAudio?.format_id})");
 
             return new DownloadItem {
+                Quality = Data.QueueQuality,
                 Url = Data.Url,
                 Title = Data.Video.title ?? "Unknown",
                 Thumbnail = Data.Thumbnail,

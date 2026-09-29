@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: Κάτω
   QueueOpenFolder: Άνοιγμα φακέλου
   QueueEmpty: Η ουρά είναι κενή
+  # Queue Tab - Quality preset
+  QueueQuality: Ποιότητα
+  QueueQualityHelper: Η ποιότητα που εφαρμόζεται στα στοιχεία που προστίθενται στην ουρά. Το μέγιστο και το ελάχιστο εντοπίζονται ανά βίντεο. Αν η ζητούμενη ανάλυση δεν είναι διαθέσιμη, γίνεται επιστροφή στο μέγιστο.
+  QualityCurrent: Όπως επιλέχθηκε
+  QualityMax: Μέγιστη (αυτόματα)
+  QualityHigh: Υψηλή (1080p)
+  QualityMedium: Μεσαία (720p)
+  QualityLow: Χαμηλή (480p)
+  QualityMin: Ελάχιστη (αυτόματα)
 # Window - About
 About:
   About: Σχετικά με

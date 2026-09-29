@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: Sposta giù
   QueueOpenFolder: Apri cartella
   QueueEmpty: La coda è vuota
+  # Queue Tab - Quality preset
+  QueueQuality: Qualità
+  QueueQualityHelper: Qualità applicata agli elementi aggiunti alla coda. Il massimo e il minimo vengono rilevati per ogni video. Se la risoluzione richiesta non è disponibile, viene usato il massimo.
+  QualityCurrent: Come selezionato
+  QualityMax: Massima (auto)
+  QualityHigh: Alta (1080p)
+  QualityMedium: Media (720p)
+  QualityLow: Bassa (480p)
+  QualityMin: Minima (auto)
 # Window - About
 About:
   About: Informazioni su

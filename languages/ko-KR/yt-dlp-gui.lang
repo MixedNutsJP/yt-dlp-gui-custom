@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: 아래로
   QueueOpenFolder: 폴더 열기
   QueueEmpty: 대기열이 비어 있습니다
+  # Queue Tab - Quality preset
+  QueueQuality: 화질
+  QueueQualityHelper: 대기열에 추가할 때 적용되는 화질입니다. 최대와 최소는 동영상마다 자동으로 가져옵니다. 지정한 해상도를 사용할 수 없으면 최대 화질로 대체됩니다.
+  QualityCurrent: 선택한 대로
+  QualityMax: 최대 (자동)
+  QualityHigh: 높음 (1080p)
+  QualityMedium: 중간 (720p)
+  QualityLow: 낮음 (480p)
+  QualityMin: 최소 (자동)
 # Window - About
 About:
   About: 정보

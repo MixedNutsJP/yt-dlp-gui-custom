@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: 下移
   QueueOpenFolder: 打开文件夹
   QueueEmpty: 队列为空
+  # Queue Tab - Quality preset
+  QueueQuality: 画质
+  QueueQualityHelper: 添加到队列时应用的画质。最高和最低会针对每个视频自动获取。若指定的分辨率不可用，将回退到最高画质。
+  QualityCurrent: 按所选
+  QualityMax: 最高 (自动)
+  QualityHigh: 高 (1080p)
+  QualityMedium: 中 (720p)
+  QualityLow: 低 (480p)
+  QualityMin: 最低 (自动)
 # Window - About
 About:
   About: 关于

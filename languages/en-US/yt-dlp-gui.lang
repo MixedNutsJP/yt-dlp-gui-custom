@@ -126,6 +126,15 @@ Main:
   QueueMoveDown: Move Down
   QueueOpenFolder: Open Folder
   QueueEmpty: Queue is empty
+  # Queue Tab - Quality preset
+  QueueQuality: Quality
+  QueueQualityHelper: Quality applied to items added to the queue. Max and Min are detected per video. If the requested resolution is not available, it falls back to Max.
+  QualityCurrent: As selected
+  QualityMax: Max (auto)
+  QualityHigh: High (1080p)
+  QualityMedium: Medium (720p)
+  QualityLow: Low (480p)
+  QualityMin: Min (auto)
 # Window - About
 About:
   About: About

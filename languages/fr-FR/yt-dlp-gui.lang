@@ -121,6 +121,15 @@ Main:
   QueueMoveDown: Descendre
   QueueOpenFolder: Ouvrir le dossier
   QueueEmpty: La file est vide
+  # Queue Tab - Quality preset
+  QueueQuality: Qualité
+  QueueQualityHelper: Qualité appliquée aux éléments ajoutés à la file d'attente. Le maximum et le minimum sont détectés pour chaque vidéo. Si la résolution demandée n'est pas disponible, le maximum est utilisé.
+  QualityCurrent: Selon la sélection
+  QualityMax: Maximale (auto)
+  QualityHigh: Haute (1080p)
+  QualityMedium: Moyenne (720p)
+  QualityLow: Basse (480p)
+  QualityMin: Minimale (auto)
 # Window - About
 About:
   About: A propos

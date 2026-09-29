@@ -122,6 +122,15 @@ Main:
   QueueMoveDown: 下移
   QueueOpenFolder: 開啟資料夾
   QueueEmpty: 佇列是空的
+  # Queue Tab - Quality preset
+  QueueQuality: 畫質
+  QueueQualityHelper: 加入佇列時套用的畫質。最高與最低會針對每部影片自動取得。若指定的解析度無法取得，將回復為最高畫質。
+  QualityCurrent: 依所選
+  QualityMax: 最高 (自動)
+  QualityHigh: 高 (1080p)
+  QualityMedium: 中 (720p)
+  QualityLow: 低 (480p)
+  QualityMin: 最低 (自動)
 # Window - About
 About:
   About: 關於
