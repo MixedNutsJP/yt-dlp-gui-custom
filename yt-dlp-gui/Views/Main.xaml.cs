@@ -31,6 +31,9 @@ namespace yt_dlp_gui.Views {
         private readonly ViewData Data = new();
         private List<DLP> RunningDLP = new();
         private DownloadManager _downloadManager;
+        // クリップボード監視は内部でメッセージ受信用の隠しウィンドウを持つため、
+        // 破棄できるようフィールドで保持する（ローカル変数のままだとプロセスが終了しない）
+        private SharpClipboard _clipboard;
 
         public Main() {
             InitializeComponent();
@@ -175,7 +178,7 @@ namespace yt_dlp_gui.Views {
                 }
             };
 
-            var sc = new SharpClipboard();
+            var sc = _clipboard = new SharpClipboard();
             sc.ClipboardChanged += (s, e) => {
                 if (!Data.IsMonitor || Data.IsDownload) return;  // IsAnalyze チェックを削除
                 if (e.ContentType == SharpClipboard.ContentTypes.Text) {
@@ -807,7 +810,25 @@ namespace yt_dlp_gui.Views {
             Data.Width = Width;
             Data.Height = Height;
 
+            // キュー経由のダウンロードを停止
             _downloadManager?.Shutdown();
+
+            // メイン画面から開始したダウンロードは RunningDLP でしか追跡しておらず
+            // DownloadManager.Shutdown() の対象外なので、ここで明示的に落とす。
+            // これを怠ると親を失った yt-dlp が残り続ける。
+            Data.IsAbouted = true;
+            foreach (var dlp in RunningDLP) {
+                try {
+                    dlp.Kill();
+                } catch { }
+            }
+            RunningDLP.Clear();
+
+            // 隠しウィンドウを解放しないとウィンドウを閉じてもプロセスが終了しない
+            try {
+                _clipboard?.Dispose();
+            } catch { }
+            _clipboard = null;
         }
         private void ComboBox_TextChanged(object sender, TextChangedEventArgs e) {
             var combo = sender as System.Windows.Controls.ComboBox;
