@@ -64,13 +64,11 @@ namespace yt_dlp_gui.Wrappers {
         }
         public DLP Temp(string path) {
             Options["--cache-dir"] = path.QP();
-            // --paths に temp: を追加（home: と共存させる）
-            if (Options.ContainsKey("--paths")) {
-                // 既存の --paths (home:) に追加
-                Options["--paths"] += " " + path.QP("temp");
-            } else {
-                Options["--paths"] = path.QP("temp");
-            }
+            // --paths は 1 回の指定につき 1 引数しか取れないため、home: と temp: は
+            // それぞれ独立した --paths として渡す必要がある。
+            // Options は Dictionary でキーが重複できないので擬似キーで分けて保持し、
+            // Args 生成時に両方とも --paths へ展開する。
+            Options["[paths:temp]"] = path.QP("temp");
             return this;
         }
         public DLP Proxy(string proxy_url, bool enable = true) {
@@ -222,6 +220,10 @@ namespace yt_dlp_gui.Wrappers {
                         case "[subtitle]":
                             key = "--output";
                             break;
+                        case "[paths:home]":
+                        case "[paths:temp]":
+                            key = "--paths";
+                            break;
                     }
                     if (string.IsNullOrWhiteSpace(x.Value)) {
                         return key;
@@ -244,13 +246,13 @@ namespace yt_dlp_gui.Wrappers {
             }
 
             // 絶対パスを分解して home と output を別々に設定
-            // これにより --paths temp: が正しく機能する
+            // --output が絶対パスだと yt-dlp は --paths temp: を無視するため
             var directory = Path.GetDirectoryName(targetpath);
             var filename = Path.GetFileName(targetpath);
 
             // home: ダウンロード先ディレクトリ
             if (!string.IsNullOrEmpty(directory)) {
-                Options["--paths"] = directory.QP("home");
+                Options["[paths:home]"] = directory.QP("home");
             }
 
             // output: 相対パス（ファイル名のみ）
@@ -261,12 +263,17 @@ namespace yt_dlp_gui.Wrappers {
         public DLP DownloadVideo(string format_id, string source_ext, string targetpath) {
             Debug.WriteLine($"id:{format_id} source:{source_ext} path:{targetpath}", "DownloadVideo");
             Options["--format"] = format_id;
-            if (source_ext == targetpath.getExt()) {
-                Options["--output"] = targetpath.QP();
-            } else {
+            if (source_ext != targetpath.getExt()) {
                 Options["--remux-video"] = targetpath.getExt();
-                Options["--output"] = targetpath.QP();
             }
+
+            // --output が絶対パスだと yt-dlp は --paths temp: を無視するため
+            // ディレクトリは home: に分離し、--output はファイル名のみにする
+            var directory = Path.GetDirectoryName(targetpath);
+            if (!string.IsNullOrEmpty(directory)) {
+                Options["[paths:home]"] = directory.QP("home");
+            }
+            Options["--output"] = Path.GetFileName(targetpath).QP();
             return this;
         }
         public DLP DownloadAudio(string audio_id, string target) {
@@ -275,7 +282,14 @@ namespace yt_dlp_gui.Wrappers {
                 Options["--audio-format"] = target.getExt().QS();
             }
             Options["--format"] = audio_id;
-            Options["--output"] = target.RemoveExt().QP();
+
+            // --output が絶対パスだと yt-dlp は --paths temp: を無視するため
+            // ディレクトリは home: に分離し、--output はファイル名のみにする
+            var directory = Path.GetDirectoryName(target);
+            if (!string.IsNullOrEmpty(directory)) {
+                Options["[paths:home]"] = directory.QP("home");
+            }
+            Options["--output"] = Path.GetFileName(target.RemoveExt()).QP();
             return this;
         }
         public DLP DownloadSubtitle(string lang, string targetpath) {
